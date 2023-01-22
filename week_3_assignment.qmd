@@ -7,25 +7,154 @@ editor: visual
 1\. EITHER save the data sheet as its own CSV file to load in, OR use the read_excel function in the readxl package to read the sheet in directly from the Excel workbook.
 
 ```{r}
-
+library(readxl)
+usma_data <- read_excel("./data/USMA_Progression.xlsx")
 ```
 
 2\. Recreate the femalespeers, malespeers, and totpeople columns **based on the documentation for those columns**, and check whether your calculations match what's in the original data. In other words, look at the excel sheet, read the variable descriptions, and create new variables that fit those descriptions. "Recreate" means "create from scratch." Do *not* use the femalespeers, malespeers, and totpeople columns already in the data to create your new ones. That wouldn't be "recreating", that would be "copying."   (NOTE 1: you won't get an exact match with the old columns, NOTE 2: keep in mind these variables count "peers", i.e. **not including yourself**).
 
+```{r}
+# From the documentation:
+# femalespeers = number of female peers in the cadet's company/cohort/year
+# malespeers = number of male peeers in the cadet's company/cohort/year
+# totpeople = number of peers total in the company/class (femalespeers + malespeers)
+# To recreate these columns I can use the year, class, company, and female columns. I'm assuming that cohort equals the class column because that seems to make sense.
+
+# Import necessary libraries.
+library(tidyverse)
+
+# Create data table of the number of cadets per company/cohort/year.
+cadets_per_class <- usma_data %>%
+  group_by(year, class, company_n) %>%
+  summarize(cadets = n())
+
+# Create data table of the number of females per company/cohort/year.
+females_per_class <- usma_data %>%
+  filter(female == 1) %>%
+  group_by(year, class, company_n) %>%
+  summarize(females = n())
+
+# Use outer join to combine all three data tables and recreate columns. Use left joins to keep all cadet rows, replace NAs with 0, convert new columns to numeric so the data type matches, and calculate new columns.
+usma_data <- usma_data %>%
+  left_join(y=cadets_per_class, by=c("year", "class", "company_n")) %>%
+  left_join(y=females_per_class, by=c("year", "class", "company_n")) %>%
+  replace_na(list(females = 0)) %>%
+  transmute(year,
+            class,
+            female,
+            femalespeers,
+            malespeers,
+            continue_or_grad,
+            company_n,
+            totpeople,
+            cadets = as.numeric(cadets),
+            females = as.numeric(females)) %>%
+  mutate(f_peers = case_when(female == 1 ~ (females - 1),
+                             TRUE ~ females),
+         m_peers = case_when(female == 0 ~ (cadets - females - 1),
+                             TRUE ~ (cadets - females)),
+         total_peers = (f_peers + m_peers),
+         )
+```
+
 3\. Investigate the rows for which your recreation \*doesn't\* line up exactly with the original columns. Any ideas what the issue might be? Do you trust the original or your recreation more?
+
+```{r}
+usma_data <- usma_data %>%
+  mutate(fp_error = case_when(femalespeers != f_peers ~ 1,
+                              TRUE ~ 0),
+         mp_error = case_when(malespeers != m_peers ~ 1,
+                              TRUE ~ 0),
+         tp_error = case_when(totpeople != total_peers ~ 1,
+                              TRUE ~ 0)
+         )
+
+usma_data %>%
+  summarize(female_errors = sum(fp_error) / nrow(usma_data) * 100,
+            male_errors = sum(mp_error) / nrow(usma_data) * 100,
+            total_peer_errors = sum(tp_error) / nrow(usma_data) * 100)
+```
+
+Most of the recreated columns do not match up with the provided columns. Reviewing the data, I think this is because the column descriptions are wrong. The "totpeople" column is described as the number of year/cohort/company peers for that specific cadet, so one might assume that the total size of the cohort and number of rows in the data table is equal to "totpeople" plus the cadet, however, this is not the case. The "totpeople" column seems to be the total number of cadets for that year/cohort/company group or else there is a row missing for each group. I think expanding this logic to the count of female and male peers as well would resolve these discrepancies. I trust the original data when the columns are interpreted correctly.
 
 4\. Create two new columns from company_n: company, and division. If it's A-1, for example, A is the company, and 1 is the division.
 
+```{r}
+# Import necessary libraries.
+library(stringr)
+
+usma_data <- usma_data %>%
+  separate(company_n, c("company", "division"))
+```
+
 5\. This data follows a certain number of cohorts, which means that in the first year of the data, we only see a small portion of all students, then more the next year, and so on. Limit the data just to years in which you have all four classes present **in full quantity** (i.e. not just a few stragglers but all four entire classes appear to be there. This will entail finding which years those are).
+
+```{r}
+# The data description indicates that only 1981 has all four classes. Verify by first grouping by year and summarizing if all classes are present. 
+usma_data %>%
+  group_by(year) %>%
+  summarize(classes = n_distinct(class))
+
+# It looks like both 1980 and 1981 have four classes present. Counting the number of students per each class in that year to determine if classes are present in full quantity.
+usma_data %>%
+  filter(year %in% c(80, 81)) %>%
+  group_by(year, class) %>%
+  summarize(cadets = n())
+
+# Based on this information, the data description appears to be correct where only 1981 has all four classes as 1980 class 4 only has 4 cadets, so not fully present.
+
+usma_1981 <- usma_data %>%
+  filter(year == 81)
+```
 
 6\. Make the following tables:
 
 a\. Top four companies (A, B, C, etc., not A-1, A-2) with the highest continue_or_grad rates
 
+```{r}
+# Import necessary libraries.
+library(knitr)
+
+usma_1981 %>%
+  group_by(company) %>%
+  summarize(continue_or_grad_rate = sum(continue_or_grad) / sum(n())) %>%
+  arrange(desc(continue_or_grad_rate)) %>%
+  top_n(n = 4) %>%
+  kable(col.names = c("Company", "Continue or Graduation Rate"), align = "cc", caption = "Table 1. 1981 Top 4 Highest Company Continue or Graduation Rates", digits = 4, format = "html", table.attr = "style='width:40%;'")
+```
+
 b\. continue_or_grad rates by class
 
+```{r}
+usma_1981 %>%
+  group_by(class) %>%
+  summarize(continue_or_grad_rate = sum(continue_or_grad) / sum(n())) %>%
+  arrange(desc(continue_or_grad_rate)) %>%
+  kable(col.names = c("Class", "Continue or Graduation Rate"), align = "cc", caption = "Table 2. Continue or Graduation Rate by Class in 1981", digits = 4, format = "html", table.attr = "style='width:40%;'")
+```
+
 c\. continue_or_grad rates *of women* by class
+
+```{r}
+usma_1981 %>%
+  filter(female == 1) %>%
+  group_by(class) %>%
+  summarize(continue_or_grad_rate = sum(continue_or_grad) / sum(n())) %>%
+  arrange(desc(continue_or_grad_rate)) %>%
+  kable(col.names = c("Class", "Continue or Graduation Rate"), align = "cc", caption = "Table 2. Continue or Graduation Rate of Women by Class in 1981", digits = 4, format = "html", table.attr = "style='width:40%;'")
+
+```
 
 Note you can make a table by just creating the appropriate data set and showing it, or by sending it to the knitr::kable() function to get it formatted a little more nicely.
 
 7\. Bonus task (ungraded, tricky): notice anything strange about the "random assignment" of women?
+
+```{r}
+usma_1981 %>%
+  filter(female == 1) %>%
+  group_by(year, class, company, division) %>%
+  summarize(females_per_group = n()) %>%
+  arrange(females_per_group)
+```
+
+Reviewing both the 1980 and all USMA West Point data, I'm not sure what is strange about the random assignment of women. In general it seems like women are more likely to be assigned with other women in a year/class/company division, then be assigned to a completely male group. For example, there is at least one other women in the same year/class/company, and in most cases the women are in the same division as well.
