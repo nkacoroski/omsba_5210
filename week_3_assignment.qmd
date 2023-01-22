@@ -7,10 +7,15 @@ editor: visual
 1\. EITHER save the data sheet as its own CSV file to load in, OR use the read_excel function in the readxl package to read the sheet in directly from the Excel workbook.
 
 ```{r}
-
+library(readxl)
+usma_data <- read_excel("./data/USMA_Progression.xlsx")
 ```
 
 2\. Recreate the femalespeers, malespeers, and totpeople columns **based on the documentation for those columns**, and check whether your calculations match what's in the original data. In other words, look at the excel sheet, read the variable descriptions, and create new variables that fit those descriptions. "Recreate" means "create from scratch." Do *not* use the femalespeers, malespeers, and totpeople columns already in the data to create your new ones. That wouldn't be "recreating", that would be "copying."   (NOTE 1: you won't get an exact match with the old columns, NOTE 2: keep in mind these variables count "peers", i.e. **not including yourself**).
+
+```{r}
+
+```
 
 3\. Investigate the rows for which your recreation \*doesn't\* line up exactly with the original columns. Any ideas what the issue might be? Do you trust the original or your recreation more?
 
