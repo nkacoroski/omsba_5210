@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Week 3: Assignment - USMA Data Cleaning</title>
+<title>Assignment Week 3: United States Military Academy (USMA) West Point Data</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -108,7 +108,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Week 3: Assignment - USMA Data Cleaning</h1>
+<h1 class="title">Assignment Week 3: United States Military Academy (USMA) West Point Data</h1>
 </div>
 
 
@@ -123,27 +123,304 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<section id="quarto" class="level2">
-<h2 class="anchored" data-anchor-id="quarto">Quarto</h2>
-<p>Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <a href="https://quarto.org" class="uri">https://quarto.org</a>.</p>
-</section>
-<section id="running-code" class="level2">
-<h2 class="anchored" data-anchor-id="running-code">Running Code</h2>
-<p>When you click the <strong>Render</strong> button a document will be generated that includes both content and the output of embedded code. You can embed code like this:</p>
+<p>1. EITHER save the data sheet as its own CSV file to load in, OR use the read_excel function in the readxl package to read the sheet in directly from the Excel workbook.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>usma_data <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"./data/USMA_Progression.xlsx"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</div>
-<p>You can add options to executable code like this</p>
+<p>2. Recreate the femalespeers, malespeers, and totpeople columns <strong>based on the documentation for those columns</strong>, and check whether your calculations match what’s in the original data. In other words, look at the excel sheet, read the variable descriptions, and create new variables that fit those descriptions. “Recreate” means “create from scratch.” Do&nbsp;<em>not</em> use the femalespeers, malespeers, and totpeople columns already in the data to create your new ones. That wouldn’t be “recreating”, that would be “copying.”&nbsp; &nbsp;(NOTE 1: you won’t get an exact match with the old columns, NOTE 2: keep in mind these variables count “peers”, i.e.&nbsp;<strong>not including yourself</strong>).</p>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># From the documentation:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># femalespeers = number of female peers in the cadet's company/cohort/year</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># malespeers = number of male peeers in the cadet's company/cohort/year</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># totpeople = number of peers total in the company/class (femalespeers + malespeers)</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># To recreate these columns I can use the year, class, company, and female columns. I'm assuming that cohort equals the class column because that seems to make sense.</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Import necessary libraries.</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+✔ ggplot2 3.4.0      ✔ purrr   1.0.1 
+✔ tibble  3.1.8      ✔ dplyr   1.0.10
+✔ tidyr   1.2.1      ✔ stringr 1.5.0 
+✔ readr   2.1.3      ✔ forcats 0.5.2 
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create data table of the number of cadets per company/cohort/year.</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>cadets_per_class <span class="ot">&lt;-</span> usma_data <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, class, company_n) <span class="sc">%&gt;%</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">cadets =</span> <span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'year', 'class'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create data table of the number of females per company/cohort/year.</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>females_per_class <span class="ot">&lt;-</span> usma_data <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(female <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, class, company_n) <span class="sc">%&gt;%</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">females =</span> <span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'year', 'class'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use outer join to combine all three data tables and recreate columns. Use left joins to keep all cadet rows, replace NAs with 0, convert new columns to numeric so the data type matches, and calculate new columns.</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>usma_data <span class="ot">&lt;-</span> usma_data <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(<span class="at">y=</span>cadets_per_class, <span class="at">by=</span><span class="fu">c</span>(<span class="st">"year"</span>, <span class="st">"class"</span>, <span class="st">"company_n"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(<span class="at">y=</span>females_per_class, <span class="at">by=</span><span class="fu">c</span>(<span class="st">"year"</span>, <span class="st">"class"</span>, <span class="st">"company_n"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">replace_na</span>(<span class="fu">list</span>(<span class="at">females =</span> <span class="dv">0</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(year,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>            class,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>            female,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>            femalespeers,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>            malespeers,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>            continue_or_grad,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>            company_n,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>            totpeople,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">cadets =</span> <span class="fu">as.numeric</span>(cadets),</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">females =</span> <span class="fu">as.numeric</span>(females)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">f_peers =</span> <span class="fu">case_when</span>(female <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> (females <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>                             <span class="cn">TRUE</span> <span class="sc">~</span> females),</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>         <span class="at">m_peers =</span> <span class="fu">case_when</span>(female <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> (cadets <span class="sc">-</span> females <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>                             <span class="cn">TRUE</span> <span class="sc">~</span> (cadets <span class="sc">-</span> females)),</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>         <span class="at">total_peers =</span> (f_peers <span class="sc">+</span> m_peers),</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>         )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>3. Investigate the rows for which your recreation *doesn’t* line up exactly with the original columns. Any ideas what the issue might be? Do you trust the original or your recreation more?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>usma_data <span class="ot">&lt;-</span> usma_data <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">fp_error =</span> <span class="fu">case_when</span>(femalespeers <span class="sc">!=</span> f_peers <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                              <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span>),</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">mp_error =</span> <span class="fu">case_when</span>(malespeers <span class="sc">!=</span> m_peers <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>                              <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span>),</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">tp_error =</span> <span class="fu">case_when</span>(totpeople <span class="sc">!=</span> total_peers <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>                              <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>         )</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>usma_data <span class="sc">%&gt;%</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">female_errors =</span> <span class="fu">sum</span>(fp_error) <span class="sc">/</span> <span class="fu">nrow</span>(usma_data) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">male_errors =</span> <span class="fu">sum</span>(mp_error) <span class="sc">/</span> <span class="fu">nrow</span>(usma_data) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">total_peer_errors =</span> <span class="fu">sum</span>(tp_error) <span class="sc">/</span> <span class="fu">nrow</span>(usma_data) <span class="sc">*</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 4</code></pre>
+<pre><code># A tibble: 1 × 3
+  female_errors male_errors total_peer_errors
+          &lt;dbl&gt;       &lt;dbl&gt;             &lt;dbl&gt;
+1          7.84        92.4               100</code></pre>
 </div>
 </div>
-<p>The <code>echo: false</code> option disables the printing of code (only output is displayed).</p>
-</section>
+<p>Most of the recreated columns do not match up with the provided columns. Reviewing the data, I think this is because the column descriptions are wrong. The “totpeople” column is described as the number of year/cohort/company peers for that specific cadet, so one might assume that the total size of the cohort and number of rows in the data table is equal to “totpeople” plus the cadet, however, this is not the case. The “totpeople” column seems to be the total number of cadets for that year/cohort/company group or else there is a row missing for each group. I think expanding this logic to the count of female and male peers as well would resolve these discrepancies. I trust the original data when the columns are interpreted correctly.</p>
+<p>4. Create two new columns from company_n: company, and division. If it’s A-1, for example, A is the company, and 1 is the division.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Import necessary libraries.</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>usma_data <span class="ot">&lt;-</span> usma_data <span class="sc">%&gt;%</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(company_n, <span class="fu">c</span>(<span class="st">"company"</span>, <span class="st">"division"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>5. This data follows a certain number of cohorts, which means that in the first year of the data, we only see a small portion of all students, then more the next year, and so on. Limit the data just to years in which you have all four classes present <strong>in full quantity</strong> (i.e.&nbsp;not just a few stragglers but all four entire classes appear to be there. This will entail finding which years those are).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The data description indicates that only 1981 has all four classes. Verify by first grouping by year and summarizing if all classes are present. </span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>usma_data <span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year) <span class="sc">%&gt;%</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">classes =</span> <span class="fu">n_distinct</span>(class))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 2
+   year classes
+  &lt;dbl&gt;   &lt;int&gt;
+1    78       2
+2    79       3
+3    80       4
+4    81       4
+5    82       3
+6    83       2
+7    84       1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># It looks like both 1980 and 1981 have four classes present. Counting the number of students per each class in that year to determine if classes are present in full quantity.</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>usma_data <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">80</span>, <span class="dv">81</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, class) <span class="sc">%&gt;%</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">cadets =</span> <span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'year'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 8 × 3
+# Groups:   year [2]
+   year class cadets
+  &lt;dbl&gt; &lt;dbl&gt;  &lt;int&gt;
+1    80     1   1188
+2    80     2   1049
+3    80     3   1028
+4    80     4      4
+5    81     1   1273
+6    81     2   1068
+7    81     3    966
+8    81     4    983</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Based on this information, the data description appears to be correct where only 1981 has all four classes as 1980 class 4 only has 4 cadets, so not fully present.</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>usma_1981 <span class="ot">&lt;-</span> usma_data <span class="sc">%&gt;%</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">81</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>6. Make the following tables:</p>
+<p>a. Top four companies (A, B, C, etc., not A-1, A-2) with the highest continue_or_grad rates</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Import necessary libraries.</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>usma_1981 <span class="sc">%&gt;%</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(company) <span class="sc">%&gt;%</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">continue_or_grad_rate =</span> <span class="fu">sum</span>(continue_or_grad) <span class="sc">/</span> <span class="fu">sum</span>(<span class="fu">n</span>())) <span class="sc">%&gt;%</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(continue_or_grad_rate)) <span class="sc">%&gt;%</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="at">n =</span> <span class="dv">4</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Company"</span>, <span class="st">"Continue or Graduation Rate"</span>), <span class="at">align =</span> <span class="st">"cc"</span>, <span class="at">caption =</span> <span class="st">"Table 1. 1981 Top 4 Highest Company Continue or Graduation Rates"</span>, <span class="at">digits =</span> <span class="dv">4</span>, <span class="at">format =</span> <span class="st">"html"</span>, <span class="at">table.attr =</span> <span class="st">"style='width:40%;'"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Selecting by continue_or_grad_rate</code></pre>
+</div>
+<div class="cell-output-display">
+
+<table style="width:40%;">
+<caption>Table 1. 1981 Top 4 Highest Company Continue or Graduation Rates</caption>
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Company </th>
+   <th style="text-align:center;"> Continue or Graduation Rate </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> D </td>
+   <td style="text-align:center;"> 0.9232 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> A </td>
+   <td style="text-align:center;"> 0.9115 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> G </td>
+   <td style="text-align:center;"> 0.9089 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> C </td>
+   <td style="text-align:center;"> 0.9068 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p>b. continue_or_grad rates by class</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>usma_1981 <span class="sc">%&gt;%</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(class) <span class="sc">%&gt;%</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">continue_or_grad_rate =</span> <span class="fu">sum</span>(continue_or_grad) <span class="sc">/</span> <span class="fu">sum</span>(<span class="fu">n</span>())) <span class="sc">%&gt;%</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(continue_or_grad_rate)) <span class="sc">%&gt;%</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Class"</span>, <span class="st">"Continue or Graduation Rate"</span>), <span class="at">align =</span> <span class="st">"cc"</span>, <span class="at">caption =</span> <span class="st">"Table 2. Continue or Graduation Rate by Class in 1981"</span>, <span class="at">digits =</span> <span class="dv">4</span>, <span class="at">format =</span> <span class="st">"html"</span>, <span class="at">table.attr =</span> <span class="st">"style='width:40%;'"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table style="width:40%;">
+<caption>Table 2. Continue or Graduation Rate by Class in 1981</caption>
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Class </th>
+   <th style="text-align:center;"> Continue or Graduation Rate </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 0.9573 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 3 </td>
+   <td style="text-align:center;"> 0.9524 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2 </td>
+   <td style="text-align:center;"> 0.8792 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 1 </td>
+   <td style="text-align:center;"> 0.8507 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p>c. continue_or_grad rates&nbsp;<em>of women</em> by class</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>usma_1981 <span class="sc">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(female <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(class) <span class="sc">%&gt;%</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">continue_or_grad_rate =</span> <span class="fu">sum</span>(continue_or_grad) <span class="sc">/</span> <span class="fu">sum</span>(<span class="fu">n</span>())) <span class="sc">%&gt;%</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(continue_or_grad_rate)) <span class="sc">%&gt;%</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Class"</span>, <span class="st">"Continue or Graduation Rate"</span>), <span class="at">align =</span> <span class="st">"cc"</span>, <span class="at">caption =</span> <span class="st">"Table 2. Continue or Graduation Rate of Women by Class in 1981"</span>, <span class="at">digits =</span> <span class="dv">4</span>, <span class="at">format =</span> <span class="st">"html"</span>, <span class="at">table.attr =</span> <span class="st">"style='width:40%;'"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table style="width:40%;">
+<caption>Table 2. Continue or Graduation Rate of Women by Class in 1981</caption>
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Class </th>
+   <th style="text-align:center;"> Continue or Graduation Rate </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 0.9839 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 3 </td>
+   <td style="text-align:center;"> 0.9091 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 1 </td>
+   <td style="text-align:center;"> 0.8120 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2 </td>
+   <td style="text-align:center;"> 0.6848 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p>Note you can make a table by just creating the appropriate data set and showing it, or by sending it to the knitr::kable() function to get it formatted a little more nicely.</p>
+<p>7. Bonus task (ungraded, tricky): notice anything strange about the “random assignment” of women?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>usma_1981 <span class="sc">%&gt;%</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(female <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, class, company, division) <span class="sc">%&gt;%</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">females_per_group =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(females_per_group)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'year', 'class', 'company'. You can
+override using the `.groups` argument.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 109 × 5
+# Groups:   year, class, company [33]
+    year class company division females_per_group
+   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;                &lt;int&gt;
+ 1    81     1 H       4                        1
+ 2    81     2 B       2                        1
+ 3    81     2 E       2                        1
+ 4    81     4 D       2                        1
+ 5    81     4 H       1                        1
+ 6    81     1 I       4                        2
+ 7    81     2 A       3                        2
+ 8    81     2 B       1                        2
+ 9    81     2 B       3                        2
+10    81     2 B       4                        2
+# … with 99 more rows</code></pre>
+</div>
+</div>
+<p>Reviewing both the 1980 and all USMA West Point data, I’m not sure what is strange about the random assignment of women. In general it seems like women are more likely to be assigned with other women in a year/class/company division, then be assigned to a completely male group. For example, there is at least one other women in the same year/class/company, and in most cases the women are in the same division as well.</p>
 
 </main>
 <!-- /main column -->
