@@ -11,6 +11,7 @@ Import data and necessary libraries.
 ```{r}
 library(tidyverse)
 library(vtable)
+library(ggplot2)
 
 df <- readRDS('./data/college_expenses_and_enrollment.Rdata')
 ```
@@ -99,7 +100,7 @@ main_df <- df %>%
   drop_na()
 
 na_df <- df %>%
-  filter_all(any_vars(is.na(.)))
+  filter(if_any(everything(), ~ is.na(.x)))
 ```
 
 2.  Check that unique values make sense. All values need to be unique for college_id, approximately 50 unique values for state (unless territories are included, if yes, rename column to clarify), and college types need to make sense.
@@ -128,22 +129,63 @@ main_df %>%
 # All college types makes sense (NP = non-profit). Types vary by 2/4 year, public/private, and for/non profit.
 ```
 
-3.  For income and expense values: no negative values, the sum of income or expense subcategories should not be more than the total, check for outliers.
-
-4.  For enrollment values: apparently some colleges can be really small (see \[Deep Springs College, CO\](https://en.wikipedia.org/wiki/Deep_Springs_College), so a minimum of 9 might be reasonable, but unlikely. Check for outliers and that full-time or undergraduate enrollment does not exceed total enrollment.
+3.  For income and expense values: no negative values, a zero value may also be suspect (a school does not spend any funding on instruction?) but will keep in for now and evaluate during exploratory data analysis. In addition, the sum of income or expense subcategories should not be more than the total.
 
 ```{r}
-df1 %>%
-  select(college_id) %>%
-  is.na() %>%
-  sum()
+# Review income and expense columns with negative observations. I could be missing something, but I don't think it make sense to have negative values in any of these columns.
+vtable::vtable(main_df)
 
-df1 %>%
-  select(college_id) %>%
-  n_distinct()
+# There are negative values for private_income, sales_income, and public service_expense. Investigate further to better understand and inform next steps.
+main_df %>%
+  filter(if_any(everything(), ~ .x < 0))
+  
+# There are only 8 rows with a negative value in any column. It seems like these might be errors. Since it is very few rows, I think it makes more sense to remove rows rather than set to zero or remove the negative sign. 
+
+neg_df <- main_df %>%
+  filter(if_any(everything(), ~ .x < 0))
+
+main_df <- main_df %>%
+  filter(if_all(everything(), ~ .x >= 0))
+
+# Check for observations where subcategory incomes are greater than the total income. There may be some subcategory incomes not listed (investments?)
+main_df %>%
+  select(contains("income")) %>%
+  mutate(calc_income = tuition_income +
+           federal_income +
+           state_income +
+           local_income +
+           private_income +
+           sales_income,
+         income_error = if_else(total_income >= calc_income, 0, 1)) %>%
+  filter(income_error == 1)
+
+# No observations where the calculated income is greater than the total income. Check the same for expenses.
+main_df %>%
+  select(contains("expense")) %>%
+  mutate(calc_expense = research_expense +
+           public_service_expense +
+           student_service_expense +
+           instruction_expense +
+           academic_support_expense +
+           other_expense,
+         expense_error = if_else(total_expense >= calc_expense, 0, 1)) %>%
+  filter(expense_error == 1)
+
+# No expense errors where calculated expense is greater than total expense.
 ```
 
-state
+4.  For enrollment values: apparently some colleges can be really small (see \[Deep Springs College, CO\](https://en.wikipedia.org/wiki/Deep_Springs_College), so a minimum of 9 might be reasonable, but unlikely. Check that full-time or undergraduate enrollment does not exceed total enrollment. Evaluate outliers during exploratory data analysis.
+
+```{r}
+# Check that enrollment values make sense.
+main_df %>%
+  select(contains("enrollment")) %>%
+  mutate(full_time_error = if_else(total_enrollment >= full_time_enrollment, 0, 1),
+         undergrad_error = if_else(total_enrollment >= undergraduate_enrollment, 0, 1)) %>%
+  filter(full_time_error == 1 | undergrad_error == 1)
+
+# No errors where the number of full-time or undegraduate students is greater than the total enrollment.
+```
 
 Univariate Non-Graphical
 
