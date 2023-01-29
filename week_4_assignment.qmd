@@ -1,0 +1,154 @@
+---
+title: "Exploratory Data Analysis of Incomes and Expenses for United States Colleges"
+format: html
+editor: visual
+---
+
+### Set Up
+
+Import data and necessary libraries.
+
+```{r}
+library(tidyverse)
+library(vtable)
+
+df <- readRDS('./data/college_expenses_and_enrollment.Rdata')
+```
+
+### Variable Review
+
+```{r}
+vtable::vtable(df)
+```
+
+Non-income or expense variables include unique college ID, state abbreviation, college type, institution name, total enrollment, full time enrollment, and undergraduate enrollment. The state and college type factors might be helpful for grouping. The institution name for labeling particular values. Total enrollment is interesting because the minimum value is 9. There was a college with 9 students? Could be an error. A 0 value minimum for full time and undergraduate enrollment makes a little more sense to me, perhaps there are some community colleges, etc. with only part-time students or perhaps college only accepts graduate students, I'm not sure, but also something to investigate. Per the assignment note, most values will indicate the size and the enrollment values can be used to calculate per capita numbers for comparison. It may make the most sense to look at four year schools with full-time undergraduate students for per capita comparisons. I would like to know what year this data set is from. Of note, both college_type and state data type is factor. I think it makes sense to probably change to character.
+
+Income variables include total, tuition, federal support, state support, local support, private support, and sales. I'm assuming income is gross and not net. Some colleges have really low incomes (\$6,067?) but I don't have enough domain knowledge to know if that is reasonable yet. Also what school has a \$0 income from tuition? Do they have no students? I'm also not sure why there would be a negative value for private support or sales income. Income might actually be net (revenues - expenses). I attempted to find more information about the variable descriptions via the \[IPEDS Survey Components\](https://nces.ed.gov/ipeds/use-the-data/survey-components/2/finance) and \[IPEDS Compare Institutions Variable Tree\](https://nces.ed.gov/ipeds/datacenter/SelectVariables.aspx?stepId=1). To be honest, I'm not quite sure about the data that I'm working with as it was difficult to match variables in the file provided to the site - good real world experience - and I'm going to have to make some assumptions. Biggest call outs so far are (1) finance variables are nested under the type of institution and I'm not quite sure how they are derived in this data set so this may lead to some unexpected variation, (2) there is a difference between Fall Enrollment and 12-Month Enrollment, I'm not quite sure what values are provided in the data set.
+
+Expense variables include total, research, public service, student services, instruction, academic support, and other. There are negative values in public service and other, not sure why yet. I wasn't sure what all of these categories mean, so using prior links and this \[Postsecondary Institution Expenses article\](https://nces.ed.gov/programs/coe/indicator/cue/postsecondary-institution-expense#fn6) as best reference. Research is any activity that produces research. Public service is any activity that provides non-instructional services to benefit people outside of the institution (community service, cooperative extension services, public broadcasting services). Student services is any activity that supports student well-being and development outside of formal instruction (admissions, registrar activities, dependent intercollegiate athletics and health services). Instruction is any activity that provides instruction (credit and non-credit), may also include research and public service activities that are not separately budgeted. Academic support is any activity that supports the institution's mission of instruction, research, and public service. Other expenses is a catch-all for items such as bad debts, income taxes, liability obligations, or other operational expenses not associated with the primary mission of the institution, such as a major federally funded research and development center. The IPEDS Expenses article groups expenses as follows:\
+1. Independent operations and other\
+2. Hospital services\
+3. Net grant aid to students\
+4. Auxiliary enterprises\
+5. Academic support, student services, and institutional support\
+6. Research and public service\
+7. Instruction
+
+Assuming income means revenue, there is also an IPEDS \[Postsecondary Institution Revenues article\](https://nces.ed.gov/programs/coe/indicator/cud) to help inform what these columns mean. I get the gist of tuition, federal, state, and local incomes. Private income includes any gifts, grants, and contracts from non-governmental entities. Sales income includes revenues from sales of goods and services such as publications, testing, cosmetology, and hospital. I'm not sure about the data provided, but in the article, private grants and contracts are included in the local income instead of private income. In addition, income is not comparable across types of institutions because they may treat income differently. For example, Pell Grants are usually part of Federal funding for public institutions but usually part of tuition funding for private institutions. The article also groups revenue as follows:\
+1. Tuition and fees\
+2. Investments\
+3. Government\
+3. Auxiliary enterprises\
+4. Other
+
+Whew! Lots of questions remaining, but I think I have a better understanding of what some of these variables mean and areas to proceed with caution. And it may make sense to group some of the columns similar to the articles referenced. Also just re-read assignment. The important note uses income interchangeably with revenue, so that question is answered.
+
+### Data Preparation
+
+To prepare the data, I renamed the columns for clarification and consistency, then completed the following checks to handle missing values and ensure data seems reasonable. I want to do some initial exploratory data analysis before deciding how to derive per capita values.
+
+```{r}
+# Rename columns and convert state and college type to character.
+df <- df %>%
+  rename(college_id = UNITID,
+         state = STABBR,
+         institution = Institution.Name,
+         total_enrollment = Total.Enrollment,
+         full_time_enrollment = Full.Time.Enrollment,
+         undergraduate_enrollment = Undergraduate.Enrollment,
+         college_type = type,
+         total_income = Total.Income,
+         tuition_income = Tuition,
+         federal_income = Federal,
+         state_income = State,
+         local_income = Local,
+         private_income = Private,
+         sales_income = Sales,
+         total_expense = Total.Expenses,
+         research_expense = Research,
+         public_service_expense = Public.Service,
+         student_service_expense = Student.Services,
+         instruction_expense = Instruction,
+         academic_support_expense = Academic.Support,
+         other_expense = Other) %>%
+  mutate(across(where(is.factor), as.character))
+
+# Update vtable output to match.
+vtable::vtable(df)
+```
+
+1.  Check for missing values and resolve.
+
+```{r}
+# Summarize number of missing values per column where they exist.
+df %>%
+  summarize_if(anyNA, funs(sum(is.na(.))))
+
+# There are 426 missing institution names and 516 missing values for each enrollment columm. Although it decreases the data set, I can't think of a reasonable reason why an institution would not have a name or any total enrollment so I think it makes sense to remove these rows from the main data set. Since the number of missing values for each enrollment column is the same, I imagine it is the same rows for each column. If not, it is reasonable that a college may not have any full-time students or undergraduate students, or the total enrollment value could be missing due to an error. Check that all missing enrollment values belong to the same rows.
+
+df %>%
+  filter(is.na(total_enrollment)) %>%
+  select(total_enrollment,
+         full_time_enrollment,
+         undergraduate_enrollment) %>%
+  summarize_all(funs(sum(is.na(.))))
+
+# Confirmed. Separate out missing values from main data set. 
+
+main_df <- df %>%
+  drop_na()
+
+na_df <- df %>%
+  filter_all(any_vars(is.na(.)))
+```
+
+2.  Check that unique values make sense. All values need to be unique for college_id, approximately 50 unique values for state (unless territories are included, if yes, rename column to clarify), and college types need to make sense.
+
+```{r}
+# Select columns and count unique values.
+main_df %>%
+  select(college_id, state, college_type) %>%
+  summarize_all(funs(n_distinct(.)))
+
+# The number of unique college_id values is equal to the number of observations. There is more than 50 states so reviewing values.
+
+states_df <- main_df %>%
+  distinct(state) %>%
+  arrange(state)
+
+# Reviewing against the IPEDS variable tree, the additional nine values are: District of Columbia (DC), American Samoa (AS), Federated States of Micronesia (FM), Guam (GU), Marshall Islands (MH), Northern Marianas (MP), Palau (PW), Puerto Rico (PR), and the Virgin Islands (VI). Renaming column to clarify
+
+main_df <- main_df %>%
+  rename(state_or_territory = state)
+
+# Review unique college types.
+main_df %>%
+  distinct(college_type)
+
+# All college types makes sense (NP = non-profit). Types vary by 2/4 year, public/private, and for/non profit.
+```
+
+3.  For income and expense values: no negative values, the sum of income or expense subcategories should not be more than the total, check for outliers.
+
+4.  For enrollment values: apparently some colleges can be really small (see \[Deep Springs College, CO\](https://en.wikipedia.org/wiki/Deep_Springs_College), so a minimum of 9 might be reasonable, but unlikely. Check for outliers and that full-time or undergraduate enrollment does not exceed total enrollment.
+
+```{r}
+df1 %>%
+  select(college_id) %>%
+  is.na() %>%
+  sum()
+
+df1 %>%
+  select(college_id) %>%
+  n_distinct()
+```
+
+state
+
+Univariate Non-Graphical
+
+Univariate Graphical
+
+Multivariate Non-Graphical
+
+Multivariate Graphical
