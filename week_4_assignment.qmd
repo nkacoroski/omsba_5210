@@ -278,17 +278,6 @@ Enrollment highly varies by college_type. For example, the for-profit 2-year pro
 
 ### Exploratory Data Analysis - Multivariate Graphical
 
-```{r}
-# Review high-level finacial graphs by program type. Note: Tried additional variables but too crowded.
-
-fin_df <- per_cap_df %>%
-  select(program_type,
-         total_income,
-         total_expense)
-
-GGally::ggpairs(fin_df)
-```
-
 There's a lot of directions to go with exploratory data analysis. I found the IPEDS visuals from the articles linked earlier inspiring, so I would like to explore something similar. Reviewing, it sounds like "per capita" is calculated as per full-time student plus part-time equivalent. I think it makes the most sense to follow a similar calculation - I don't know if graduate versus undergraduate tuition costs are that different, or at least I think full-time versus part-time is more important. In addition this "per capita" calculation, I decided to group the college types and financial categories. Due to time constraints, I focused on income.
 
 ```{r}
@@ -333,6 +322,15 @@ per_cap_df %>%
            round(total_income, 0) == round(calc_income_2, 0), 0, 1)) %>%
   select(total_income, calc_income_1, calc_income_2, income_error_1, income_error_2) %>%
     filter((income_error_1 == 1) | (income_error_2 == 1))
+
+# Review high-level financial graphs by program type. Note: Tried additional variables but too crowded.
+
+fin_df <- per_cap_df %>%
+  select(program_type,
+         total_income,
+         total_expense)
+
+GGally::ggpairs(fin_df)
 
 # Prepare income graph. Pivot to long form to get funding source category.
 income_df <- per_cap_df %>%
