@@ -12,6 +12,9 @@ Import data and necessary libraries.
 library(tidyverse)
 library(vtable)
 library(ggplot2)
+library(GGally)
+library(gridExtra)
+library(ggpubr)
 
 df <- readRDS('./data/college_expenses_and_enrollment.Rdata')
 ```
@@ -101,6 +104,8 @@ main_df <- df %>%
 
 na_df <- df %>%
   filter(if_any(everything(), ~ is.na(.x)))
+
+# Reviewing NAs, based on the institution names, many of these are system or district administration offices, so it makes sense to have no enrollment. I still think it makes sense to exclude these institutions because I would like to focus on institutions with students and be able to compare per capita values.
 ```
 
 2.  Check that unique values make sense. All values need to be unique for college_id, approximately 50 unique values for state (unless territories are included, if yes, rename column to clarify), and college types need to make sense.
@@ -156,7 +161,7 @@ main_df %>%
            local_income +
            private_income +
            sales_income,
-         income_error = if_else(total_income >= calc_income, 0, 1)) %>%
+         income_error = if_else(total_income == calc_income, 0, 1)) %>%
   filter(income_error == 1)
 
 # No observations where the calculated income is greater than the total income. Check the same for expenses.
@@ -168,7 +173,7 @@ main_df %>%
            instruction_expense +
            academic_support_expense +
            other_expense,
-         expense_error = if_else(total_expense >= calc_expense, 0, 1)) %>%
+         expense_error = if_else(total_expense == calc_expense, 0, 1)) %>%
   filter(expense_error == 1)
 
 # No expense errors where calculated expense is greater than total expense.
@@ -187,10 +192,393 @@ main_df %>%
 # No errors where the number of full-time or undegraduate students is greater than the total enrollment.
 ```
 
-Univariate Non-Graphical
+### Exploratory Data Analysis - Univariate Non-Graphical
 
-Univariate Graphical
+```{r}
+# Summarize main data.
+vtable(main_df, lush = TRUE)
+sumtable(main_df)
+```
 
-Multivariate Non-Graphical
+No missing values, as expected. There is one state or territory that is no longer represented. Will look at graphs for clearer picture of income and expense values. Percentage breakdown of college types is interesting. The majority of colleges are private non-profit 4-year schools (36.5%), followed by public 2-year (22.7%), public 4-year (17%), for-profit 2-year (13.4%), for-profit 4-year (7.2%), and lastly private non-profit 2-year (3.2%). Missed earlier that not all the institution names are unique. I'm guessing there might be multiple institutions with the same name, sub-entities, or duplicates. Need to further investigate and potentially remove.
 
-Multivariate Graphical
+```{r}
+# Review duplicate institutions
+duplicates_df <- main_df %>%
+  group_by(institution) %>%
+  filter(n() > 1) %>%
+  arrange(institution)
+
+# Check for any exact matches.
+duplicates_df %>%
+  group_by_all() %>%
+  filter(n() > 1) %>%
+  ungroup()
+
+# There are no exact row matches.
+```
+
+Duplicate institution names are due to several reasons. I also reviewed the definition of UNITID (college_id). It is "Unique identification number assigned to postsecondary institutions surveyed through the Integrated Postsecondary Education Data System (IPEDS). Also referred to as UNITID or IPEDS ID." The main ones seem to be as follows:
+
+1.  Each campus belonging to the institution has a unique college ID. For example Academy of Interactive Entertainment has a unique ID for their Washington state campus and Louisiana campus. It may be in the same state as well, such as American College of Healthcare and Technology with two California campuses.
+2.  There are separate institutions with the same name, such as the two Anderson colleges.
+
+I decided to leave in duplicate names and continue using the college_id as the identifier. I think it is likely some separate college campuses are essentially separate, if affiliate institutions.
+
+### Exploratory Data Analysis - Univariate Graphical
+
+First, look at the distributions for continuous variables.
+
+```{r}
+# Create list of continuous target variables.
+target_variables <- main_df %>%
+  select(matches("income|expense|enrollment")) %>%
+  colnames()
+
+# Visualize historgrams of target variables.
+for (variable in target_variables) {
+  print(ggplot(main_df, aes_string(variable)) + 
+          geom_histogram())
+}
+```
+
+All continuous variables are heavily skewed right. To me, this mostly makes sense. It's less likely to have colleges with high sources of income, expenses, or enrollments.
+
+Second, look at the distribution of categorical variables.
+
+```{r}
+# college type
+ggplot(main_df) +
+  geom_bar(aes(x = college_type, y = after_stat(count/sum(count)))) +
+  coord_flip() + 
+  theme_classic() +
+  scale_y_continuous(labels = scales::percent) +
+  ylab("percentage")
+
+# state or territory
+ggplot(main_df) +
+  geom_bar(aes(x = state_or_territory, y = after_stat(count/sum(count)))) +
+  coord_flip() + 
+  theme_classic() +
+  scale_y_continuous(labels = scales::percent) +
+  ylab("percentage")
+```
+
+I wonder why the private non-profit 4-year colleges have the highest number of schools and the private non-profit 2-year colleges have the lowest number of schools. This is also a flipped relationship compared to for-profit and public schools where there are more 2-year colleges than 4-year colleges. Per the articles mentioned prior, may make sense to group by public, private for-profit, and private non-profit. In hindsight, that's probably why the variable was original a 2x3 factor. The state_or_territory distribution is squished, but California clearly has the highest percentage of institutions. It may make sense to summarize by \[region\](https://nces.ed.gov/ipeds/Search/ViewTable?tableId=10788#:\~:text=Utah%2C%20and%20Wyoming.-,The%20Far%20West%20region%20includes%20Alaska%2C%20California%2C%20Hawaii%2C,Nevada%2C%20Oregon%2C%20and%20Washington.).
+
+### Exploratory Data Analysis - Multivariate Non-Graphical
+
+```{r}
+# Group by college_type
+main_df %>%
+  sumtable(group = 'college_type')
+```
+
+Enrollment highly varies by college_type. For example, the for-profit 2-year program has fairly close average total, undergraduate, and full-time enrollments. On average, there is 360 students per program, all of which are undergraduate and most are full time. Compare these data to the public 4-year program where the average total enrollment is 12,140 students per program, however, the average number full-time students is 8,635 per program, and 10,127 students on average are undergraduates. Standard deviations are very high for all categories, so I think this is where college size comes into play and calculating per capita values are important.
+
+### Exploratory Data Analysis - Multivariate Graphical
+
+```{r}
+# Review high-level finacial graphs by program type. Note: Tried additional variables but too crowded.
+
+fin_df <- per_cap_df %>%
+  select(program_type,
+         total_income,
+         total_expense)
+
+GGally::ggpairs(fin_df)
+```
+
+There's a lot of directions to go with exploratory data analysis. I found the IPEDS visuals from the articles linked earlier inspiring, so I would like to explore something similar. Reviewing, it sounds like "per capita" is calculated as per full-time student plus part-time equivalent. I think it makes the most sense to follow a similar calculation - I don't know if graduate versus undergraduate tuition costs are that different, or at least I think full-time versus part-time is more important. In addition this "per capita" calculation, I decided to group the college types and financial categories. Due to time constraints, I focused on income.
+
+```{r}
+# Calculate financial values per full time equivalent (FTE) student. Assuming that a part-time student exactly half of a full-time student, and rounding up to provide a more conservative estimate.
+per_cap_df <- main_df %>%
+  mutate(
+    government_income = federal_income + state_income + local_income,
+    other_income = private_income + sales_income,
+    re_pub_serv_expense = research_expense + public_service_expense,
+    stu_ser_aca_sup_expense = student_service_expense + academic_support_expense,
+    fte = round(
+    full_time_enrollment + ((total_enrollment - full_time_enrollment) / 2),
+    0),
+    across((contains("income") | contains("expense")),  ~ .x / fte),
+    program_type = case_when(
+      grepl("For-Profit", college_type) ~ "Private for-profit",
+      grepl("Private NP", college_type) ~ "Private nonprofit",
+      grepl("Public", college_type) ~ "Public",
+      TRUE ~ "Error"
+      ),
+    program_year = case_when(grepl("2-Year", college_type) ~ 2,
+                             grepl("4-Year", college_type) ~ 4,
+                             TRUE ~ 0)
+    )
+
+# Check if situations where income does not add up as test. This was happening due to slight differences with how floating point numbers are calculated, numbers are the same (see work below).
+
+per_cap_df %>%
+  select(contains("income")) %>%
+  mutate(calc_income_1 = tuition_income +
+           federal_income +
+           state_income +
+           local_income +
+           private_income +
+           sales_income,
+         calc_income_2 = (tuition_income + 
+                          government_income +
+                          other_income),
+         income_error_1 = if_else(
+           round(total_income, 0) == round(calc_income_1, 0), 0, 1),
+         income_error_2 = if_else(
+           round(total_income, 0) == round(calc_income_2, 0), 0, 1)) %>%
+  select(total_income, calc_income_1, calc_income_2, income_error_1, income_error_2) %>%
+    filter((income_error_1 == 1) | (income_error_2 == 1))
+
+# Prepare income graph. Pivot to long form to get funding source category.
+income_df <- per_cap_df %>%
+  group_by(program_type) %>%
+  select(program_type, tuition_income, government_income, other_income) %>%
+  pivot_longer(cols = ends_with("income"), names_to = "income_source", values_to = "amount")
+
+income_df <- income_df %>%
+  group_by(program_type, income_source) %>%
+  summarize(total_amount = sum(amount)) %>%
+  group_by(program_type) %>%
+  mutate(percent = total_amount / sum(total_amount))
+  
+```
+
+Graph percent distribution of total income by control of institution and funding source.
+
+```{r}
+# Prepare data.
+income_df <- main_df %>%
+  mutate(government_income = federal_income + state_income + local_income,
+         other_income = private_income + sales_income,
+         program_type = case_when(
+           grepl("For-Profit", college_type) ~ "Private for-profit",
+           grepl("Private NP", college_type) ~ "Private nonprofit",
+           grepl("Public", college_type) ~ "Public",
+           TRUE ~ "Error")) %>%
+  select(program_type, tuition_income, government_income, other_income) %>%
+  pivot_longer(cols = ends_with("income"), names_to = "source", values_to = "amount") %>%
+  group_by(program_type, source) %>%
+  summarize(total_amount = sum(amount)) %>%
+  group_by(program_type) %>%
+  mutate(percent = total_amount / sum(total_amount))
+  
+# Graph.
+ggplot(income_df, aes(x = program_type, y = total_amount, fill = source)) + 
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label=paste0(sprintf("%1.1f", percent*100),"%")),
+                     position=position_fill(vjust=0.5), color="black") +
+  labs(title = "Percent Distribution of Total Income \nby Control of Institution and Funding Source") +
+  xlab(label = "Control of Institution") +
+  ylab(label = "Percent of Income") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_brewer(name = "Funding Source",
+                      labels=c("Government", "Private and Sales", "Tuition and Fees")) +
+  theme_minimal()
+```
+
+Keeping in mind that funding for different institutional controls cannot be compared because they label funding sources differently...
+
+Over three-fourths of private for-profit funding is from tuition and fees with almost a fifth from the government and only a little from private and sales. Two-thirds of private nonprofit funding is from private and sales sources, less than one-third is from tuition and fees, and only a little from the government. Funding for public institutions is approximately two-fifths from government sources, one-third from private and sales sources, and less than one-fourth from tuition and fees. I think this is helpful to see where funding comes from for each type of institutional control.
+
+Graph tuition and fee income per full-time equivalent student by control of institution.
+
+```{r}
+# Prepare data. 
+tuition_df <- main_df %>%
+  select(tuition_income, total_enrollment, college_type, full_time_enrollment) %>%
+  mutate(fte = round(
+    full_time_enrollment + ((total_enrollment - full_time_enrollment) / 2),
+    0),
+    tuition_per_fte = (tuition_income / fte),
+    program_type = case_when(
+      grepl("For-Profit", college_type) ~ "Private for-profit",
+      grepl("Private NP", college_type) ~ "Private nonprofit",
+      grepl("Public", college_type) ~ "Public",
+      TRUE ~ "Error")) %>%
+  select(tuition_per_fte, program_type)
+
+# Figure out color.
+library("RColorBrewer")
+display.brewer.pal(9, "Blues")
+brewer.pal(9, "Blues")
+
+# Check shape of tuition per full-time equivalent student to see if it makes sense to take mean or median.
+ggplot(tuition_df, aes(tuition_per_fte)) +
+  geom_histogram()
+
+# Data is heavily skewed right, so using the median to determine average tuition per full time equivalent student by control of institution.
+tuition_df %>%
+  group_by(program_type) %>%
+  summarize(median_per_fte = median(tuition_per_fte)) %>%
+ggplot() +
+  geom_col(aes(x = program_type, y = median_per_fte), fill = "#4292C6") +
+  labs(title = "Tuition and Fees Income per Full-Time Equivalent (FTE) Student \n by Control of Institution",
+       subtitle = "(Averaged by Median)") +
+ xlab(label = "Control of Institution") +
+ ylab(label = "Tuition and Fees Income") +
+  geom_text(aes(x = program_type, y = median_per_fte, label = scales::dollar(round(median_per_fte, 0))),
+            color = "white",
+            vjust = 1.5) +
+  scale_y_continuous(labels=scales::dollar_format()) +
+  scale_color_brewer() +
+  theme_minimal()
+```
+
+The average tuition and fees per full-time equivalent student is highest for private nonprofits, closely followed by private for-profits, and much lower for public institutions. This may be because private institutions treat some government funding as tuition income.
+
+Graph government income per full-time equivalent student by funding source and control of the institution.
+
+```{r}
+# Prepare data. 
+gov_df <- main_df %>%
+  select(federal_income, state_income, local_income, total_enrollment, college_type, full_time_enrollment) %>%
+  mutate(fte = round(
+    full_time_enrollment + ((total_enrollment - full_time_enrollment) / 2),
+    0),
+    across(contains("income"),  ~ .x / fte),
+    program_type = case_when(
+      grepl("For-Profit", college_type) ~ "Private for-profit",
+      grepl("Private NP", college_type) ~ "Private nonprofit",
+      grepl("Public", college_type) ~ "Public",
+      TRUE ~ "Error")) %>%
+  select(federal_income, state_income, local_income, program_type) %>%
+  mutate(state_and_local_income = state_income + local_income)
+
+# Check shape of government incomes per full-time equivalent student to see if it makes sense to take mean or median.
+gov_df %>%
+  filter(program_type == "Private nonprofit") %>%
+ggplot(aes(x = federal_income)) +
+  geom_histogram()
+
+# Create list of government income variables.
+gov_variables <- gov_df %>%
+  select(matches("income")) %>%
+  colnames()
+
+# Visualize historgrams of target variables.
+for (variable in gov_variables) {
+  print(ggplot(gov_df, aes_string(variable)) + 
+          geom_histogram())
+}
+
+GGally::ggpairs(gov_df)
+
+# Played around with different program_types and I think it still makes sense to take the median.Most data is heavily skewed right.
+fed_plot <- gov_df %>%
+  group_by(program_type) %>%
+  summarize(median_per_fte = median(federal_income)) %>%
+ggplot() +
+  geom_col(aes(x = program_type, y = median_per_fte), fill = "#4292C6") +
+  labs(title = "Federal Income per Full-Time Equivalent (FTE) Student \n by Control of Institution",
+       subtitle = "(Averaged by Median)") +
+ xlab(label = "Control of Institution") +
+ ylab(label = "Federal Income") +
+  geom_text(aes(x = program_type, y = median_per_fte, label = scales::dollar(round(median_per_fte, 0))),
+            color = "white",
+            vjust = 1.5) +
+  scale_y_continuous(labels=scales::dollar_format()) +
+  theme_minimal()
+
+state_and_local_plot <- gov_df %>%
+  group_by(program_type) %>%
+  summarize(median_per_fte = median(state_and_local_income)) %>%
+ggplot() +
+  geom_col(aes(x = program_type, y = median_per_fte), fill = "#4292C6") +
+  labs(title = "State and Local Income per Full-Time Equivalent (FTE) Student \n by Control of Institution",
+       subtitle = "(Averaged by Median)") +
+ xlab(label = "Control of Institution") +
+ ylab(label = "State and Local Income") +
+  geom_text(aes(x = program_type, y = median_per_fte, label = scales::dollar(round(median_per_fte, 0))),
+            color = "black",
+            vjust = -0.2) +
+  scale_y_continuous(labels=scales::dollar_format()) +
+  theme_minimal()
+
+ggarrange(fed_plot, state_and_local_plot)
+
+# After playing around with different libraries, I think it may work best to redo graphs with a facet grid.
+
+gov_df %>%
+  group_by(program_type) %>%
+  summarize(avg_fed = median(federal_income), 
+            avg_state_local = median(state_and_local_income)) %>%
+  pivot_longer(contains("avg"), names_to = "source", values_to = "avg_amount") %>%
+  mutate(source = case_when(source == "avg_fed" ~ "Federal",
+                            source == "avg_state_local" ~ "State and Local",
+                            TRUE ~ source)) %>%
+  ggplot(aes(program_type, avg_amount)) +
+  geom_col(fill = "#4292C6") +
+  labs(title = "Government Income per Full-Time Equivalent (FTE) Student \nby Control of Institution",
+       subtitle = "(Averaged by Median)") +
+ xlab(label = "Control of Institution") +
+ ylab(label = "Income") +
+  geom_text(aes(x = program_type, 
+                y = avg_amount, 
+                label = scales::dollar(round(avg_amount, 0))),
+            color = "#333333",
+            vjust = -0.2,
+            size = 3) +
+  scale_y_continuous(labels=scales::dollar_format()) +
+  facet_wrap(vars(source)) +
+  theme_minimal()
+
+```
+
+Public institutions get the most government funding per student with significantly more state and local than federal funding. All institutions receive some type of federal funding, but private for-profit institutions do not appear to receive any state and local funding, and private nonprofit institutions receive very little state and local funding.
+
+### Interesting Relationship Visual
+
+It was a helpful learning exercise to try and create similar income graphs like on the IPEDS site, and I felt like all were somewhat confusing or misleading because each institutional control type really can't be compared to each other because they label funding sources differently. For an interesting relationship visual, I decided to create a funding source by control of institution that tried to separate out these categories better.
+
+```{r}
+income_graph <- main_df %>%
+  select(federal_income, state_income, local_income, tuition_income, private_income, sales_income, total_enrollment, college_type, full_time_enrollment) %>%
+  mutate(fte = round(
+    full_time_enrollment + ((total_enrollment - full_time_enrollment) / 2),
+    0),
+    across(contains("income"),  ~ .x / fte),
+    program_type = case_when(
+      grepl("For-Profit", college_type) ~ "Private for-profit",
+      grepl("Private NP", college_type) ~ "Private nonprofit",
+      grepl("Public", college_type) ~ "Public",
+      TRUE ~ "Error")) %>%
+  select(federal_income, state_income, local_income, tuition_income, private_income, sales_income, program_type) %>%
+  mutate(state_and_local_income = state_income + local_income,
+         private_and_sales_income = private_income + sales_income) %>%
+  group_by(program_type) %>%
+  summarize("Federal" = median(federal_income), 
+            "State and Local" = median(state_and_local_income),
+            "Tuition and Fees" = median(tuition_income),
+            "Private and Sales" = median(private_and_sales_income)) %>%
+  pivot_longer(c("Federal", "State and Local", "Tuition and Fees",
+                 "Private and Sales"), names_to = "source", values_to = "avg_amount") %>%
+  group_by(program_type, source) %>%
+  summarize(total = sum(avg_amount)) %>%
+  group_by(program_type) %>%
+  mutate(percent = total / sum(total)) %>%
+  ggplot(aes(source, total, fill = factor(program_type))) +
+  geom_col() +
+  labs(title = "Median Income per Full-Time Equivalent (FTE) Student by Institution Type") +
+  xlab(label = "Funding Source") +
+  ylab(label = "Income") +
+  geom_text(aes(label=paste0(sprintf("%1.1f", percent*100),"%")),
+            vjust = -0.2, color="black", size = 3) +
+  scale_y_continuous(labels=scales::dollar_format()) +
+  facet_wrap(vars(program_type)) +
+  scale_x_discrete(guide = guide_axis(angle = 50)) +
+  scale_fill_brewer() +
+  theme_minimal() +
+  theme(strip.text = element_text(face = "bold"),
+        legend.position="none")
+
+income_graph
+
+ggsave("income_graph.png")
+```
+
+I think this visualization does a better job of separating out income for each institution, however, there is still room for improvement. I'm not sure yet what is the best way to handle the duplicative x labels (tried a few methods and underneath slanted seems to be best), and I'd like to add clearer breaks between the graphs.
