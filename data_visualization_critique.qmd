@@ -1,0 +1,24 @@
+---
+title: "Data Visualization Critique"
+author: "Natasha Kacoroski"
+format: html
+editor: visual
+---
+
+### Introduction
+
+The data visualization that I chose to critique is the Washington Department of Fish and Wildlife's 2021-23 budget chart. I found this chart on the [WDFW's operating budget page](https://wdfw.wa.gov/about/administration/budget/operating) of their website.
+
+![](images/image-1329663921.png)
+
+### What is the story?
+
+### How effective is the visualization?
+
+### Is the visualization misleading?
+
+### How well does the visualization hold up visualization principles?
+
+### How could the visualization be improved?
+
+### Why does my version improve the visualization?
