@@ -1,0 +1,2163 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Natasha Kacoroski">
+
+<title>Week 5 Assignment - Tidy Tuesday</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="week_5_assignment_files/libs/clipboard/clipboard.min.js"></script>
+<script src="week_5_assignment_files/libs/quarto-html/quarto.js"></script>
+<script src="week_5_assignment_files/libs/quarto-html/popper.min.js"></script>
+<script src="week_5_assignment_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="week_5_assignment_files/libs/quarto-html/anchor.min.js"></script>
+<link href="week_5_assignment_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="week_5_assignment_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="week_5_assignment_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="week_5_assignment_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="week_5_assignment_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+<script src="week_5_assignment_files/libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="week_5_assignment_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Week 5 Assignment - Tidy Tuesday</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Natasha Kacoroski </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="data-preparation" class="level2">
+<h2 class="anchored" data-anchor-id="data-preparation">Data Preparation</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>cats_uk <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-01-31/cats_uk.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 18215 Columns: 11
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr  (2): tag_id, study_name
+dbl  (5): event_id, location_long, location_lat, ground_speed, height_above_...
+lgl  (3): visible, algorithm_marked_outlier, manually_marked_outlier
+dttm (1): timestamp
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>cats_uk_reference <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-01-31/cats_uk_reference.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 101 Columns: 16
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr  (6): tag_id, animal_id, animal_taxon, animal_reproductive_condition, an...
+dbl  (4): prey_p_month, hrs_indoors, n_cats, age_years
+lgl  (4): hunt, food_dry, food_wet, food_other
+dttm (2): deploy_on_date, deploy_off_date
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+<p>Data is of pet cat characteristics and movements from a GPS tracker collected by volunteers in the U.K. during 2017.</p>
+</section>
+<section id="exploratory-data-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-data-analysis">Exploratory Data Analysis</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+✔ ggplot2 3.4.0      ✔ purrr   1.0.1 
+✔ tibble  3.1.8      ✔ dplyr   1.0.10
+✔ tidyr   1.2.1      ✔ stringr 1.5.0 
+✔ readr   2.1.3      ✔ forcats 0.5.2 
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vtable)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: kableExtra
+
+Attaching package: 'kableExtra'
+
+The following object is masked from 'package:dplyr':
+
+    group_rows</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: timechange
+
+Attaching package: 'lubridate'
+
+The following objects are masked from 'package:base':
+
+    date, intersect, setdiff, union</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span> (geosphere)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RColorBrewer)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Review summary information</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>vtable<span class="sc">::</span><span class="fu">vtable</span>(cats_uk_reference, <span class="at">lush =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>cats_uk_reference</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Name </th>
+   <th style="text-align:left;"> Class </th>
+   <th style="text-align:left;"> Values </th>
+   <th style="text-align:left;"> Missing </th>
+   <th style="text-align:left;"> Summary </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> tag_id </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'Abba-Tag' 'Alfie-Tag' 'Amber-Tag' 'Ares' 'Athena' and more </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> nuniq: 101 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> animal_id </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'Abba' 'Alfie' 'Amber' 'Ares' 'Athena' and more </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> nuniq: 101 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> animal_taxon </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'Felis catus' </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> nuniq: 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> deploy_on_date </td>
+   <td style="text-align:left;"> POSIXct </td>
+   <td style="text-align:left;"> Time: 2017-06-03 01:02:09 to 2017-11-24 09:43:09 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> median: 2017-08-25 01:02:00, nuniq: 100 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> deploy_off_date </td>
+   <td style="text-align:left;"> POSIXct </td>
+   <td style="text-align:left;"> Time: 2017-06-10 02:10:52 to 2017-11-30 00:52:55 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> median: 2017-09-01 00:05:31, nuniq: 101 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> hunt </td>
+   <td style="text-align:left;"> logical </td>
+   <td style="text-align:left;"> TRUE FALSE </td>
+   <td style="text-align:left;"> 9 </td>
+   <td style="text-align:left;"> mean: 0.88, sd: 0.326, nuniq: 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> prey_p_month </td>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> Num: 0 to 17.5 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 3.743, sd: 4.831, nuniq: 6 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> animal_reproductive_condition </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'Neutered' 'Not fixed' 'Spayed' </td>
+   <td style="text-align:left;"> 3 </td>
+   <td style="text-align:left;"> nuniq: 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> animal_sex </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'f' 'm' </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> nuniq: 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> hrs_indoors </td>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> Num: 2.5 to 22.5 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 11.856, sd: 5.228, nuniq: 5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> n_cats </td>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> Num: 1 to 4 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 2.079, sd: 0.997, nuniq: 4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> food_dry </td>
+   <td style="text-align:left;"> logical </td>
+   <td style="text-align:left;"> TRUE FALSE </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 0.96, sd: 0.196, nuniq: 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> food_wet </td>
+   <td style="text-align:left;"> logical </td>
+   <td style="text-align:left;"> TRUE FALSE </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 0.703, sd: 0.459, nuniq: 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> food_other </td>
+   <td style="text-align:left;"> logical </td>
+   <td style="text-align:left;"> TRUE FALSE </td>
+   <td style="text-align:left;"> 10 </td>
+   <td style="text-align:left;"> mean: 0.462, sd: 0.501, nuniq: 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> study_site </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'UK' </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> nuniq: 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> age_years </td>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> Num: 0 to 16 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> mean: 5.42, sd: 3.385, nuniq: 16 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>vtable<span class="sc">::</span><span class="fu">vtable</span>(cats_uk, <span class="at">lush =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>cats_uk</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Name </th>
+   <th style="text-align:left;"> Class </th>
+   <th style="text-align:left;"> Values </th>
+   <th style="text-align:left;"> Missing </th>
+   <th style="text-align:left;"> Summary </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> tag_id </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'Abba-Tag' 'Alfie-Tag' 'Amber-Tag' 'Ares' 'Athena' and more </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> nuniq: 101 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> event_id </td>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> Num: 3395610551 to 4149497980 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 3618911564.053, sd: 193404826.86, nuniq: 18215 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> visible </td>
+   <td style="text-align:left;"> logical </td>
+   <td style="text-align:left;"> TRUE FALSE </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 0.981, sd: 0.137, nuniq: 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> timestamp </td>
+   <td style="text-align:left;"> POSIXct </td>
+   <td style="text-align:left;"> Time: 2017-06-03 01:02:09 to 2017-11-30 00:52:55 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> median: 2017-08-08 03:15:41, nuniq: 18162 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> location_long </td>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> Num: -5.759 to -4.209 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: -4.988, sd: 0.301, nuniq: 14968 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> location_lat </td>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> Num: 50.104 to 50.882 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 50.296, sd: 0.158, nuniq: 9396 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ground_speed </td>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> Num: 0 to 277092 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 1911.484, sd: 4592.574, nuniq: 507 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> height_above_ellipsoid </td>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> Num: -550.07 to 8388.26 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 103.648, sd: 245.706, nuniq: 11560 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> algorithm_marked_outlier </td>
+   <td style="text-align:left;"> logical </td>
+   <td style="text-align:left;"> TRUE FALSE </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 0.012, sd: 0.107, nuniq: 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> manually_marked_outlier </td>
+   <td style="text-align:left;"> logical </td>
+   <td style="text-align:left;"> TRUE FALSE </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 0.008, sd: 0.087, nuniq: 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> study_name </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'Pet Cats United Kingdom' </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> nuniq: 1 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>vtable<span class="sc">::</span><span class="fu">sumtable</span>(cats_uk_reference)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>Summary Statistics</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Variable </th>
+   <th style="text-align:left;"> N </th>
+   <th style="text-align:left;"> Mean </th>
+   <th style="text-align:left;"> Std. Dev. </th>
+   <th style="text-align:left;"> Min </th>
+   <th style="text-align:left;"> Pctl. 25 </th>
+   <th style="text-align:left;"> Pctl. 75 </th>
+   <th style="text-align:left;"> Max </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> animal_taxon </td>
+   <td style="text-align:left;"> 101 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Felis catus </td>
+   <td style="text-align:left;"> 101 </td>
+   <td style="text-align:left;"> 100% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> hunt </td>
+   <td style="text-align:left;"> 92 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... No </td>
+   <td style="text-align:left;"> 11 </td>
+   <td style="text-align:left;"> 12% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Yes </td>
+   <td style="text-align:left;"> 81 </td>
+   <td style="text-align:left;"> 88% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> prey_p_month </td>
+   <td style="text-align:left;"> 101 </td>
+   <td style="text-align:left;"> 3.743 </td>
+   <td style="text-align:left;"> 4.831 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0.5 </td>
+   <td style="text-align:left;"> 3 </td>
+   <td style="text-align:left;"> 17.5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> animal_reproductive_condition </td>
+   <td style="text-align:left;"> 98 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Neutered </td>
+   <td style="text-align:left;"> 55 </td>
+   <td style="text-align:left;"> 56.1% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Not fixed </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:left;"> 2% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Spayed </td>
+   <td style="text-align:left;"> 41 </td>
+   <td style="text-align:left;"> 41.8% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> animal_sex </td>
+   <td style="text-align:left;"> 101 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... f </td>
+   <td style="text-align:left;"> 44 </td>
+   <td style="text-align:left;"> 43.6% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... m </td>
+   <td style="text-align:left;"> 57 </td>
+   <td style="text-align:left;"> 56.4% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> hrs_indoors </td>
+   <td style="text-align:left;"> 101 </td>
+   <td style="text-align:left;"> 11.856 </td>
+   <td style="text-align:left;"> 5.228 </td>
+   <td style="text-align:left;"> 2.5 </td>
+   <td style="text-align:left;"> 7.5 </td>
+   <td style="text-align:left;"> 17.5 </td>
+   <td style="text-align:left;"> 22.5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> n_cats </td>
+   <td style="text-align:left;"> 101 </td>
+   <td style="text-align:left;"> 2.079 </td>
+   <td style="text-align:left;"> 0.997 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> 3 </td>
+   <td style="text-align:left;"> 4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> food_dry </td>
+   <td style="text-align:left;"> 101 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... No </td>
+   <td style="text-align:left;"> 4 </td>
+   <td style="text-align:left;"> 4% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Yes </td>
+   <td style="text-align:left;"> 97 </td>
+   <td style="text-align:left;"> 96% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> food_wet </td>
+   <td style="text-align:left;"> 101 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... No </td>
+   <td style="text-align:left;"> 30 </td>
+   <td style="text-align:left;"> 29.7% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Yes </td>
+   <td style="text-align:left;"> 71 </td>
+   <td style="text-align:left;"> 70.3% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> food_other </td>
+   <td style="text-align:left;"> 91 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... No </td>
+   <td style="text-align:left;"> 49 </td>
+   <td style="text-align:left;"> 53.8% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Yes </td>
+   <td style="text-align:left;"> 42 </td>
+   <td style="text-align:left;"> 46.2% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> study_site </td>
+   <td style="text-align:left;"> 101 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... UK </td>
+   <td style="text-align:left;"> 101 </td>
+   <td style="text-align:left;"> 100% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> age_years </td>
+   <td style="text-align:left;"> 100 </td>
+   <td style="text-align:left;"> 5.42 </td>
+   <td style="text-align:left;"> 3.385 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 3 </td>
+   <td style="text-align:left;"> 8 </td>
+   <td style="text-align:left;"> 16 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>vtable<span class="sc">::</span><span class="fu">sumtable</span>(cats_uk)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>Summary Statistics</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Variable </th>
+   <th style="text-align:left;"> N </th>
+   <th style="text-align:left;"> Mean </th>
+   <th style="text-align:left;"> Std. Dev. </th>
+   <th style="text-align:left;"> Min </th>
+   <th style="text-align:left;"> Pctl. 25 </th>
+   <th style="text-align:left;"> Pctl. 75 </th>
+   <th style="text-align:left;"> Max </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> event_id </td>
+   <td style="text-align:left;"> 18215 </td>
+   <td style="text-align:left;"> 3618911564.053 </td>
+   <td style="text-align:left;"> 193404826.86 </td>
+   <td style="text-align:left;"> 3395610551 </td>
+   <td style="text-align:left;"> 3459216262.5 </td>
+   <td style="text-align:left;"> 3716220358.5 </td>
+   <td style="text-align:left;"> 4149497980 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> visible </td>
+   <td style="text-align:left;"> 18215 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... No </td>
+   <td style="text-align:left;"> 349 </td>
+   <td style="text-align:left;"> 1.9% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Yes </td>
+   <td style="text-align:left;"> 17866 </td>
+   <td style="text-align:left;"> 98.1% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> location_long </td>
+   <td style="text-align:left;"> 18215 </td>
+   <td style="text-align:left;"> -4.988 </td>
+   <td style="text-align:left;"> 0.301 </td>
+   <td style="text-align:left;"> -5.759 </td>
+   <td style="text-align:left;"> -5.157 </td>
+   <td style="text-align:left;"> -4.796 </td>
+   <td style="text-align:left;"> -4.209 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> location_lat </td>
+   <td style="text-align:left;"> 18215 </td>
+   <td style="text-align:left;"> 50.296 </td>
+   <td style="text-align:left;"> 0.158 </td>
+   <td style="text-align:left;"> 50.104 </td>
+   <td style="text-align:left;"> 50.154 </td>
+   <td style="text-align:left;"> 50.428 </td>
+   <td style="text-align:left;"> 50.882 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ground_speed </td>
+   <td style="text-align:left;"> 18215 </td>
+   <td style="text-align:left;"> 1911.484 </td>
+   <td style="text-align:left;"> 4592.574 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 396 </td>
+   <td style="text-align:left;"> 2232 </td>
+   <td style="text-align:left;"> 277092 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> height_above_ellipsoid </td>
+   <td style="text-align:left;"> 18215 </td>
+   <td style="text-align:left;"> 103.648 </td>
+   <td style="text-align:left;"> 245.706 </td>
+   <td style="text-align:left;"> -550.07 </td>
+   <td style="text-align:left;"> 48.87 </td>
+   <td style="text-align:left;"> 119.43 </td>
+   <td style="text-align:left;"> 8388.26 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> algorithm_marked_outlier </td>
+   <td style="text-align:left;"> 18215 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... No </td>
+   <td style="text-align:left;"> 18004 </td>
+   <td style="text-align:left;"> 98.8% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Yes </td>
+   <td style="text-align:left;"> 211 </td>
+   <td style="text-align:left;"> 1.2% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> manually_marked_outlier </td>
+   <td style="text-align:left;"> 18215 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... No </td>
+   <td style="text-align:left;"> 18075 </td>
+   <td style="text-align:left;"> 99.2% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Yes </td>
+   <td style="text-align:left;"> 140 </td>
+   <td style="text-align:left;"> 0.8% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> study_name </td>
+   <td style="text-align:left;"> 18215 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Pet Cats United Kingdom </td>
+   <td style="text-align:left;"> 18215 </td>
+   <td style="text-align:left;"> 100% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p>There is a lot of data to explore. As both a birder and a cat lover, I know that cats allowed outdoors can have a negative impact on wildlife, so I decided to focus on cat indoor hours and prey per month first. Of interest, there is no completely indoor cat, average prey catch per month ranges from zero to 17.5, and a field called “hunt,” which means if the cat was allowed to hunt or not. I’m not sure if this means the cat was a dedicated mouser or just not controlled. I think the latter and I would expect a cat not allowed to hunt would have no prey. Also of note, there are 9 observations with a missing hunt value. Most cats (88%) are allowed to hunt.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Review NA values.</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>cats_uk_reference <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(tag_id, animal_id, hunt, prey_p_month, hrs_indoors) <span class="sc">%&gt;%</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(hunt) <span class="sc">==</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 5
+  tag_id              animal_id       hunt  prey_p_month hrs_indoors
+  &lt;chr&gt;               &lt;chr&gt;           &lt;lgl&gt;        &lt;dbl&gt;       &lt;dbl&gt;
+1 Ares                Ares            NA               0         7.5
+2 Wilfred-Tag         Wilfred         NA               0         7.5
+3 Lightening Bugg-Tag Lightening Bugg NA               0        12.5
+4 Jezebel-Tag         Jezebel         NA               0        17.5
+5 Tipsy-Tag           Tipsy           NA               0        17.5
+6 Maggie-Tag          Maggie          NA               0        22.5
+7 Lily-Tag            Lily            NA               0        22.5
+8 Pants-Tag           Pants           NA               0        12.5
+9 Neil-Tag            Neil            NA               0         7.5</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># No prey caught and varying number of hours indoors. Not sure how to address yet.</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Sanity check - if cats are not allowed to hunt, did they catch any prey?</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>cats_uk_reference <span class="sc">%&gt;%</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(tag_id, animal_id, hunt, prey_p_month, hrs_indoors) <span class="sc">%&gt;%</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(hunt <span class="sc">==</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(prey_p_month) <span class="sc">%&gt;%</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 2
+  prey_p_month `n()`
+         &lt;dbl&gt; &lt;int&gt;
+1            0    11</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Confirmed cats not allowed to hunt means they don't have the opportunity to catch prey, so perhaps the cat was confined in a way that did not allow prey catching when they went outdoors. Focusing on cats able to hunt. Leaving out cats where it is not known if the cat can hunt or not because none of them caught any prey and it is unknown if they had the opportunity catch prey.</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>hunting_cats <span class="ot">&lt;-</span> cats_uk_reference <span class="sc">%&gt;%</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(hunt <span class="sc">==</span> <span class="cn">TRUE</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>vtable<span class="sc">::</span><span class="fu">vtable</span>(hunting_cats, <span class="at">lush =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>hunting_cats</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Name </th>
+   <th style="text-align:left;"> Class </th>
+   <th style="text-align:left;"> Values </th>
+   <th style="text-align:left;"> Missing </th>
+   <th style="text-align:left;"> Summary </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> tag_id </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'Abba-Tag' 'Alfie-Tag' 'Amber-Tag' 'Athena' 'Balu-Tag' and more </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> nuniq: 81 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> animal_id </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'Abba' 'Alfie' 'Amber' 'Athena' 'Balu' and more </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> nuniq: 81 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> animal_taxon </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'Felis catus' </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> nuniq: 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> deploy_on_date </td>
+   <td style="text-align:left;"> POSIXct </td>
+   <td style="text-align:left;"> Time: 2017-06-03 01:02:09 to 2017-11-24 09:43:09 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> median: 2017-07-29 05:36:35, nuniq: 81 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> deploy_off_date </td>
+   <td style="text-align:left;"> POSIXct </td>
+   <td style="text-align:left;"> Time: 2017-06-10 02:10:52 to 2017-11-30 00:52:55 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> median: 2017-08-08 03:58:11, nuniq: 81 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> hunt </td>
+   <td style="text-align:left;"> logical </td>
+   <td style="text-align:left;"> TRUE FALSE </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 1, sd: 0, nuniq: 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> prey_p_month </td>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> Num: 0.5 to 17.5 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 4.667, sd: 4.981, nuniq: 5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> animal_reproductive_condition </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'Neutered' 'Not fixed' 'Spayed' </td>
+   <td style="text-align:left;"> 3 </td>
+   <td style="text-align:left;"> nuniq: 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> animal_sex </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'f' 'm' </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> nuniq: 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> hrs_indoors </td>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> Num: 2.5 to 22.5 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 11.204, sd: 4.794, nuniq: 5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> n_cats </td>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> Num: 1 to 4 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 2.062, sd: 0.94, nuniq: 4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> food_dry </td>
+   <td style="text-align:left;"> logical </td>
+   <td style="text-align:left;"> TRUE FALSE </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 0.951, sd: 0.218, nuniq: 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> food_wet </td>
+   <td style="text-align:left;"> logical </td>
+   <td style="text-align:left;"> TRUE FALSE </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 0.741, sd: 0.441, nuniq: 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> food_other </td>
+   <td style="text-align:left;"> logical </td>
+   <td style="text-align:left;"> TRUE FALSE </td>
+   <td style="text-align:left;"> 9 </td>
+   <td style="text-align:left;"> mean: 0.528, sd: 0.503, nuniq: 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> study_site </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'UK' </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> nuniq: 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> age_years </td>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> Num: 0 to 13 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> mean: 5.4, sd: 3.161, nuniq: 14 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>vtable<span class="sc">::</span><span class="fu">sumtable</span>(hunting_cats)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>Summary Statistics</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Variable </th>
+   <th style="text-align:left;"> N </th>
+   <th style="text-align:left;"> Mean </th>
+   <th style="text-align:left;"> Std. Dev. </th>
+   <th style="text-align:left;"> Min </th>
+   <th style="text-align:left;"> Pctl. 25 </th>
+   <th style="text-align:left;"> Pctl. 75 </th>
+   <th style="text-align:left;"> Max </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> animal_taxon </td>
+   <td style="text-align:left;"> 81 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Felis catus </td>
+   <td style="text-align:left;"> 81 </td>
+   <td style="text-align:left;"> 100% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> hunt </td>
+   <td style="text-align:left;"> 81 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... No </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Yes </td>
+   <td style="text-align:left;"> 81 </td>
+   <td style="text-align:left;"> 100% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> prey_p_month </td>
+   <td style="text-align:left;"> 81 </td>
+   <td style="text-align:left;"> 4.667 </td>
+   <td style="text-align:left;"> 4.981 </td>
+   <td style="text-align:left;"> 0.5 </td>
+   <td style="text-align:left;"> 3 </td>
+   <td style="text-align:left;"> 3 </td>
+   <td style="text-align:left;"> 17.5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> animal_reproductive_condition </td>
+   <td style="text-align:left;"> 78 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Neutered </td>
+   <td style="text-align:left;"> 42 </td>
+   <td style="text-align:left;"> 53.8% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Not fixed </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:left;"> 2.6% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Spayed </td>
+   <td style="text-align:left;"> 34 </td>
+   <td style="text-align:left;"> 43.6% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> animal_sex </td>
+   <td style="text-align:left;"> 81 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... f </td>
+   <td style="text-align:left;"> 37 </td>
+   <td style="text-align:left;"> 45.7% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... m </td>
+   <td style="text-align:left;"> 44 </td>
+   <td style="text-align:left;"> 54.3% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> hrs_indoors </td>
+   <td style="text-align:left;"> 81 </td>
+   <td style="text-align:left;"> 11.204 </td>
+   <td style="text-align:left;"> 4.794 </td>
+   <td style="text-align:left;"> 2.5 </td>
+   <td style="text-align:left;"> 7.5 </td>
+   <td style="text-align:left;"> 12.5 </td>
+   <td style="text-align:left;"> 22.5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> n_cats </td>
+   <td style="text-align:left;"> 81 </td>
+   <td style="text-align:left;"> 2.062 </td>
+   <td style="text-align:left;"> 0.94 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> 3 </td>
+   <td style="text-align:left;"> 4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> food_dry </td>
+   <td style="text-align:left;"> 81 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... No </td>
+   <td style="text-align:left;"> 4 </td>
+   <td style="text-align:left;"> 4.9% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Yes </td>
+   <td style="text-align:left;"> 77 </td>
+   <td style="text-align:left;"> 95.1% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> food_wet </td>
+   <td style="text-align:left;"> 81 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... No </td>
+   <td style="text-align:left;"> 21 </td>
+   <td style="text-align:left;"> 25.9% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Yes </td>
+   <td style="text-align:left;"> 60 </td>
+   <td style="text-align:left;"> 74.1% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> food_other </td>
+   <td style="text-align:left;"> 72 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... No </td>
+   <td style="text-align:left;"> 34 </td>
+   <td style="text-align:left;"> 47.2% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Yes </td>
+   <td style="text-align:left;"> 38 </td>
+   <td style="text-align:left;"> 52.8% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> study_site </td>
+   <td style="text-align:left;"> 81 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... UK </td>
+   <td style="text-align:left;"> 81 </td>
+   <td style="text-align:left;"> 100% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> age_years </td>
+   <td style="text-align:left;"> 80 </td>
+   <td style="text-align:left;"> 5.4 </td>
+   <td style="text-align:left;"> 3.161 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 3 </td>
+   <td style="text-align:left;"> 7.25 </td>
+   <td style="text-align:left;"> 13 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p>There are 81 cats allowed to hunt. Approximate prey per month ranges from 0.5 to 17.5 (half values because approximate average per month). There is approximately the same number of male and female cats (45.7% female, 54.3% male), and most cats are fixed (97.4%). Indoor hours ranges from 2.5 to 22.5 hours with a mean of 11-ish hours, with most cats between 7.5 and 12.5 hours indoors. Cat age ranges from 0 (less than a year old) to 13 with an average of 5.4 years, with most cats between 3 and 7.25 years. Moving on to explore graphically.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View approximate prey per month distribution</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hunting_cats, <span class="fu">aes</span>(<span class="at">x=</span>prey_p_month)) <span class="sc">+</span> </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_histogram</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="week_5_assignment_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># There are five unique values. Questionaire might have binned somehow but unable to check. </span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>hunting_cats <span class="sc">%&gt;%</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(prey_p_month) <span class="sc">%&gt;%</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 2
+  prey_p_month `n()`
+         &lt;dbl&gt; &lt;int&gt;
+1          0.5    20
+2          3      41
+3          7.5     8
+4         12.5     5
+5         17.5     7</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View indoor hours per day distribution.</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hunting_cats, <span class="fu">aes</span>(<span class="at">x=</span>hrs_indoors)) <span class="sc">+</span> </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_histogram</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="week_5_assignment_files/figure-html/unnamed-chunk-4-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Also binned with 5 unique values, so I suspect might be more of a range but Im not sure.</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>hunting_cats <span class="sc">%&gt;%</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(hrs_indoors) <span class="sc">%&gt;%</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 2
+  hrs_indoors `n()`
+        &lt;dbl&gt; &lt;int&gt;
+1         2.5     7
+2         7.5    26
+3        12.5    32
+4        17.5    13
+5        22.5     3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for relationships between variables.</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hunting_cats, <span class="fu">aes</span>(<span class="at">x =</span> hrs_indoors, <span class="at">y =</span> prey_p_month)) <span class="sc">+</span> </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="week_5_assignment_files/figure-html/unnamed-chunk-4-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># As expected, the more time a cat is indoors, the fewer prey it catches.</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hunting_cats, <span class="fu">aes</span>(<span class="at">x =</span> animal_sex, <span class="at">y =</span> prey_p_month)) <span class="sc">+</span> </span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_boxplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="week_5_assignment_files/figure-html/unnamed-chunk-4-4.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># There is more variance in prey catching with males than females, but both have an average of ~3 per month.</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hunting_cats, <span class="fu">aes</span>(<span class="at">x =</span> animal_reproductive_condition, <span class="at">y =</span> prey_p_month)) <span class="sc">+</span> </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_boxplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="week_5_assignment_files/figure-html/unnamed-chunk-4-5.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cats that are fixed seem to have the same prey per month, but unfixed cats or if it is unknown have fewer prey per month. Could be not enough data or because unfixed cats are too young to hunt well.</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hunting_cats, <span class="fu">aes</span>(<span class="at">x =</span> age_years, <span class="at">y =</span> prey_p_month)) <span class="sc">+</span> </span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 1 rows containing missing values (`geom_point()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="week_5_assignment_files/figure-html/unnamed-chunk-4-6.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cats that catch the most prey are between 2 and 6 years old. </span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>hunting_cats <span class="sc">%&gt;%</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(animal_reproductive_condition <span class="sc">==</span> <span class="st">"Not fixed"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(age_years) <span class="sc">%&gt;%</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  age_years `n()`
+      &lt;dbl&gt; &lt;int&gt;
+1         1     1
+2         3     1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Not fixed cats are actually not less than a year old.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now let’s see what can be said about the movement data for hunting cats. Is there a difference with prey caught and distance traveled?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Graph movement for one cat just to view.</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>cats_uk <span class="sc">%&gt;%</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(tag_id <span class="sc">==</span> <span class="st">"Ares"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> location_long, <span class="at">y =</span> location_lat)) <span class="sc">+</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>(<span class="fu">aes</span>(<span class="at">color =</span> <span class="fu">as.numeric</span>(timestamp)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="week_5_assignment_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Graph movement of one cat in one day to view. </span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>cats_uk <span class="sc">%&gt;%</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">as_date</span>(timestamp)) <span class="sc">%&gt;%</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(tag_id <span class="sc">==</span> <span class="st">"Ares"</span>, date <span class="sc">==</span> <span class="st">"2017-06-24"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> location_long, <span class="at">y =</span> location_lat)) <span class="sc">+</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>(<span class="fu">aes</span>(<span class="at">color =</span> timestamp))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="week_5_assignment_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distance of one cat in one day.</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>cats_uk <span class="sc">%&gt;%</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">as_date</span>(timestamp)) <span class="sc">%&gt;%</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(tag_id <span class="sc">==</span> <span class="st">"Ares"</span>, date <span class="sc">==</span> <span class="st">"2017-06-24"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">meters =</span> <span class="fu">distGeo</span>(<span class="fu">cbind</span>(location_long, location_lat),</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">cbind</span>(<span class="fu">lead</span>(location_long), <span class="fu">lead</span>(location_lat)))) <span class="sc">%&gt;%</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">miles =</span> <span class="fu">sum</span>(meters, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">/</span><span class="fl">1609.344</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+  miles
+  &lt;dbl&gt;
+1 0.811</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the distance of cats each day and night in miles.</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>cat_distances <span class="ot">&lt;-</span> cats_uk <span class="sc">%&gt;%</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(tag_id) <span class="sc">%&gt;%</span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">meters =</span> <span class="fu">distGeo</span>(<span class="fu">cbind</span>(location_long, location_lat),</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">cbind</span>(<span class="fu">lead</span>(location_long), <span class="fu">lead</span>(location_lat)))) <span class="sc">%&gt;%</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">date</span>(timestamp),</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">hour =</span> <span class="fu">if_else</span>((<span class="fu">hour</span>(timestamp) <span class="sc">&gt;=</span> <span class="dv">6</span>) <span class="sc">&amp;</span></span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>                        (<span class="fu">hour</span>(timestamp) <span class="sc">&lt;</span> <span class="dv">18</span>), <span class="st">"Day"</span>, <span class="st">"Night"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Sum distances by date and Day/Night</span></span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(tag_id, date, hour) <span class="sc">%&gt;%</span></span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">miles =</span> <span class="fu">sum</span>(meters, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">/</span><span class="fl">1609.344</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'tag_id', 'date'. You can override using
+the `.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>vtable<span class="sc">::</span><span class="fu">vtable</span>(cat_distances, <span class="at">lush =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>cat_distances</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Name </th>
+   <th style="text-align:left;"> Class </th>
+   <th style="text-align:left;"> Values </th>
+   <th style="text-align:left;"> Missing </th>
+   <th style="text-align:left;"> Summary </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> tag_id </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'Abba-Tag' 'Alfie-Tag' 'Amber-Tag' 'Ares' 'Athena' and more </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> nuniq: 101 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> date </td>
+   <td style="text-align:left;"> Date </td>
+   <td style="text-align:left;"> Time: 2017-06-03 to 2017-11-30 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> median: 2017-08-26, nuniq: 133 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> hour </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'Day' 'Night' </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> nuniq: 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> miles </td>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> Num: 0 to 53.129 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 0.622, sd: 2.629, nuniq: 1240 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># One cat went 53 miles?!</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>vtable<span class="sc">::</span><span class="fu">sumtable</span>(cat_distances)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>Summary Statistics</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Variable </th>
+   <th style="text-align:left;"> N </th>
+   <th style="text-align:left;"> Mean </th>
+   <th style="text-align:left;"> Std. Dev. </th>
+   <th style="text-align:left;"> Min </th>
+   <th style="text-align:left;"> Pctl. 25 </th>
+   <th style="text-align:left;"> Pctl. 75 </th>
+   <th style="text-align:left;"> Max </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> hour </td>
+   <td style="text-align:left;"> 1250 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Day </td>
+   <td style="text-align:left;"> 508 </td>
+   <td style="text-align:left;"> 40.6% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Night </td>
+   <td style="text-align:left;"> 742 </td>
+   <td style="text-align:left;"> 59.4% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> miles </td>
+   <td style="text-align:left;"> 1250 </td>
+   <td style="text-align:left;"> 0.622 </td>
+   <td style="text-align:left;"> 2.629 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0.087 </td>
+   <td style="text-align:left;"> 0.507 </td>
+   <td style="text-align:left;"> 53.129 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Time is pretty equal between day and night. Most cats travel between less than a mile to half a mile.</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(cat_distances, <span class="fu">aes</span>(<span class="at">x=</span>miles)) <span class="sc">+</span> </span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_histogram</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="week_5_assignment_files/figure-html/unnamed-chunk-5-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Yep. Definitely seems to be an outlier.</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(cat_distances, <span class="fu">aes</span>(<span class="at">x =</span> hour, <span class="at">y =</span> miles)) <span class="sc">+</span></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="week_5_assignment_files/figure-html/unnamed-chunk-5-4.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Might make sense to remove outliers, but first merging dataframes.</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>cats <span class="ot">&lt;-</span> hunting_cats <span class="sc">%&gt;%</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(cat_distances) <span class="sc">%&gt;%</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(animal_id, prey_p_month, animal_reproductive_condition, animal_sex,</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>         hrs_indoors, age_years, date, hour, miles)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining, by = "tag_id"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(cats, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> miles)) <span class="sc">+</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="week_5_assignment_files/figure-html/unnamed-chunk-5-5.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>vtable<span class="sc">::</span><span class="fu">vtable</span>(cats, <span class="at">lush =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>cats</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Name </th>
+   <th style="text-align:left;"> Class </th>
+   <th style="text-align:left;"> Values </th>
+   <th style="text-align:left;"> Missing </th>
+   <th style="text-align:left;"> Summary </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> animal_id </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'Abba' 'Alfie' 'Amber' 'Athena' 'Balu' and more </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> nuniq: 81 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> prey_p_month </td>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> Num: 0.5 to 17.5 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 4.948, sd: 5.187, nuniq: 5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> animal_reproductive_condition </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'Neutered' 'Not fixed' 'Spayed' </td>
+   <td style="text-align:left;"> 40 </td>
+   <td style="text-align:left;"> nuniq: 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> animal_sex </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'f' 'm' </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> nuniq: 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> hrs_indoors </td>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> Num: 2.5 to 22.5 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 10.992, sd: 4.659, nuniq: 5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> age_years </td>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> Num: 0 to 13 </td>
+   <td style="text-align:left;"> 7 </td>
+   <td style="text-align:left;"> mean: 5.208, sd: 3.033, nuniq: 14 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> date </td>
+   <td style="text-align:left;"> Date </td>
+   <td style="text-align:left;"> Time: 2017-06-03 to 2017-11-30 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> median: 2017-08-03, nuniq: 129 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> hour </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> 'Day' 'Night' </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> nuniq: 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> miles </td>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> Num: 0 to 42.764 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> mean: 0.602, sd: 2.274, nuniq: 1002 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>vtable<span class="sc">::</span><span class="fu">sumtable</span>(cats)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>Summary Statistics</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Variable </th>
+   <th style="text-align:left;"> N </th>
+   <th style="text-align:left;"> Mean </th>
+   <th style="text-align:left;"> Std. Dev. </th>
+   <th style="text-align:left;"> Min </th>
+   <th style="text-align:left;"> Pctl. 25 </th>
+   <th style="text-align:left;"> Pctl. 75 </th>
+   <th style="text-align:left;"> Max </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> prey_p_month </td>
+   <td style="text-align:left;"> 1008 </td>
+   <td style="text-align:left;"> 4.948 </td>
+   <td style="text-align:left;"> 5.187 </td>
+   <td style="text-align:left;"> 0.5 </td>
+   <td style="text-align:left;"> 3 </td>
+   <td style="text-align:left;"> 7.5 </td>
+   <td style="text-align:left;"> 17.5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> animal_reproductive_condition </td>
+   <td style="text-align:left;"> 968 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Neutered </td>
+   <td style="text-align:left;"> 541 </td>
+   <td style="text-align:left;"> 55.9% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Not fixed </td>
+   <td style="text-align:left;"> 26 </td>
+   <td style="text-align:left;"> 2.7% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Spayed </td>
+   <td style="text-align:left;"> 401 </td>
+   <td style="text-align:left;"> 41.4% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> animal_sex </td>
+   <td style="text-align:left;"> 1008 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... f </td>
+   <td style="text-align:left;"> 444 </td>
+   <td style="text-align:left;"> 44% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... m </td>
+   <td style="text-align:left;"> 564 </td>
+   <td style="text-align:left;"> 56% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> hrs_indoors </td>
+   <td style="text-align:left;"> 1008 </td>
+   <td style="text-align:left;"> 10.992 </td>
+   <td style="text-align:left;"> 4.659 </td>
+   <td style="text-align:left;"> 2.5 </td>
+   <td style="text-align:left;"> 7.5 </td>
+   <td style="text-align:left;"> 12.5 </td>
+   <td style="text-align:left;"> 22.5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> age_years </td>
+   <td style="text-align:left;"> 1001 </td>
+   <td style="text-align:left;"> 5.208 </td>
+   <td style="text-align:left;"> 3.033 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 3 </td>
+   <td style="text-align:left;"> 7 </td>
+   <td style="text-align:left;"> 13 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> hour </td>
+   <td style="text-align:left;"> 1008 </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Day </td>
+   <td style="text-align:left;"> 414 </td>
+   <td style="text-align:left;"> 41.1% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ... Night </td>
+   <td style="text-align:left;"> 594 </td>
+   <td style="text-align:left;"> 58.9% </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> miles </td>
+   <td style="text-align:left;"> 1008 </td>
+   <td style="text-align:left;"> 0.602 </td>
+   <td style="text-align:left;"> 2.274 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0.091 </td>
+   <td style="text-align:left;"> 0.525 </td>
+   <td style="text-align:left;"> 42.764 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Do cats travel more in the day or at night?</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>cats <span class="sc">%&gt;%</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(animal_id, hour) <span class="sc">%&gt;%</span></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">avg_miles =</span> <span class="fu">mean</span>(miles)) <span class="sc">%&gt;%</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(hour) <span class="sc">%&gt;%</span></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">mean</span>(avg_miles), <span class="fu">sd</span>(avg_miles))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'animal_id'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 3
+  hour  `mean(avg_miles)` `sd(avg_miles)`
+  &lt;chr&gt;             &lt;dbl&gt;           &lt;dbl&gt;
+1 Day               0.568           1.03 
+2 Night             0.651           0.883</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># It looks like cats travel a tenth of a mile more during the night on average, but standard deviation is high. Run again with out outliers (greater that 10 miles).</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>cats <span class="sc">%&gt;%</span></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(miles <span class="sc">&lt;=</span> <span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(animal_id, hour) <span class="sc">%&gt;%</span></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">avg_miles =</span> <span class="fu">mean</span>(miles)) <span class="sc">%&gt;%</span></span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(hour) <span class="sc">%&gt;%</span></span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">mean</span>(avg_miles), <span class="fu">sd</span>(avg_miles))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'animal_id'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 3
+  hour  `mean(avg_miles)` `sd(avg_miles)`
+  &lt;chr&gt;             &lt;dbl&gt;           &lt;dbl&gt;
+1 Day               0.435           0.453
+2 Night             0.586           0.669</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>cats <span class="sc">%&gt;%</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(miles <span class="sc">&lt;=</span> <span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(animal_id, hour) <span class="sc">%&gt;%</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">avg_miles =</span> <span class="fu">mean</span>(miles)) <span class="sc">%&gt;%</span></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(hour) <span class="sc">%&gt;%</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">avg =</span> <span class="fu">mean</span>(avg_miles), <span class="at">sd =</span> <span class="fu">sd</span>(avg_miles)) <span class="sc">%&gt;%</span></span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> hour, <span class="at">y =</span> avg)) <span class="sc">+</span> </span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> avg <span class="sc">-</span> sd, <span class="at">ymax =</span> avg <span class="sc">+</span> sd), <span class="at">width=</span>.<span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'animal_id'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="week_5_assignment_files/figure-html/unnamed-chunk-5-6.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Standard deviation still. Perhaps it makes a difference by approximate prey caught per month. Do cats that travel more catch more prey?</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>cats <span class="sc">%&gt;%</span></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(animal_id, prey_p_month) <span class="sc">%&gt;%</span></span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">avg =</span> <span class="fu">mean</span>(miles), <span class="at">sd =</span> <span class="fu">sd</span>(miles)) <span class="sc">%&gt;%</span></span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> prey_p_month, <span class="at">y =</span> avg)) <span class="sc">+</span> </span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> avg <span class="sc">-</span> sd, <span class="at">ymax =</span> avg <span class="sc">+</span> sd), <span class="at">width=</span>.<span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'animal_id'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="week_5_assignment_files/figure-html/unnamed-chunk-5-7.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># I don't think so. What is in common for cats that catch the most prey?</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>my_palette <span class="ot">&lt;-</span> <span class="fu">brewer.pal</span>(<span class="at">name=</span><span class="st">"Blues"</span>,<span class="at">n=</span><span class="dv">9</span>)[<span class="dv">5</span><span class="sc">:</span><span class="dv">9</span>]</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>cats <span class="sc">%&gt;%</span></span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(animal_id, date, hrs_indoors, animal_sex, age_years, prey_p_month) <span class="sc">%&gt;%</span></span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mpd =</span> <span class="fu">sum</span>(miles)) <span class="sc">%&gt;%</span></span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(animal_id, hrs_indoors, animal_sex, age_years, prey_p_month) <span class="sc">%&gt;%</span></span>
+<span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">avg_mpd =</span> <span class="fu">median</span>(mpd)) <span class="sc">%&gt;%</span></span>
+<span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> hrs_indoors, <span class="at">y =</span> avg_mpd, <span class="at">color =</span> <span class="fu">factor</span>(prey_p_month))) <span class="sc">+</span></span>
+<span id="cb63-11"><a href="#cb63-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb63-12"><a href="#cb63-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> my_palette) <span class="sc">+</span></span>
+<span id="cb63-13"><a href="#cb63-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'animal_id', 'date', 'hrs_indoors',
+'animal_sex', 'age_years'. You can override using the `.groups` argument.
+`summarise()` has grouped output by 'animal_id', 'hrs_indoors', 'animal_sex',
+'age_years'. You can override using the `.groups` argument.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="week_5_assignment_files/figure-html/unnamed-chunk-5-8.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># It looks like cats that catch more prey spend less time traveling and less time outdoors.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="visualization-story" class="level2">
+<h2 class="anchored" data-anchor-id="visualization-story">Visualization Story</h2>
+<p>The story that I think I can tell with the data is that the cats with the highest prey catch spend less time indoors or traveling. Following is my sketch.</p>
+<p><img src="images/cat_viz.jpg" class="img-fluid"></p>
+<p>My original design was to use a scatter plot and only highlight the cats with an average monthly catch of 17.5 prey. After playing around a bit, I decided that I thought that faceting was more informative. Of note, I used the median distance traveled per day because there was some skew towards high values.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>cats <span class="sc">%&gt;%</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(animal_id, date, hrs_indoors, animal_sex, age_years, prey_p_month) <span class="sc">%&gt;%</span></span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mpd =</span> <span class="fu">sum</span>(miles)) <span class="sc">%&gt;%</span></span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(animal_id, hrs_indoors, animal_sex, age_years, prey_p_month) <span class="sc">%&gt;%</span></span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">avg_mpd =</span> <span class="fu">median</span>(mpd)) <span class="sc">%&gt;%</span></span>
+<span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> hrs_indoors, <span class="at">y =</span> avg_mpd, <span class="at">color =</span> <span class="fu">factor</span>(prey_p_month))) <span class="sc">+</span></span>
+<span id="cb66-7"><a href="#cb66-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb66-8"><a href="#cb66-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(prey_p_month), <span class="at">ncol =</span> <span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb66-9"><a href="#cb66-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Cats with the highest prey catch spend less time indoors and traveling"</span>,</span>
+<span id="cb66-10"><a href="#cb66-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Average Prey Catch per Month"</span>) <span class="sc">+</span></span>
+<span id="cb66-11"><a href="#cb66-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Average Daily Indoor Time (Hours)"</span>) <span class="sc">+</span></span>
+<span id="cb66-12"><a href="#cb66-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Average Daily Travel Time (Miles)"</span>) <span class="sc">+</span></span>
+<span id="cb66-13"><a href="#cb66-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> my_palette) <span class="sc">+</span></span>
+<span id="cb66-14"><a href="#cb66-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb66-15"><a href="#cb66-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb66-16"><a href="#cb66-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position=</span><span class="st">"none"</span>,</span>
+<span id="cb66-17"><a href="#cb66-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.subtitle=</span><span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'animal_id', 'date', 'hrs_indoors',
+'animal_sex', 'age_years'. You can override using the `.groups` argument.
+`summarise()` has grouped output by 'animal_id', 'hrs_indoors', 'animal_sex',
+'age_years'. You can override using the `.groups` argument.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="week_5_assignment_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="data-citations" class="level2">
+<h2 class="anchored" data-anchor-id="data-citations">Data Citations</h2>
+<ul>
+<li><p>Kays R, Dunn RR, Parsons AW, Mcdonald B, Perkins T, Powers S, Shell L, McDonald JL, Cole H, Kikillus H, Woods L, Tindle H, Roetman P (2020) The small home ranges and large local ecological impacts of pet cats. Animal Conservation. <a href="http://dx.doi.org/10.1111/acv.12563">doi:10.1111/acv.12563</a></p></li>
+<li><p>McDonald JL, Cole H (2020) Data from: The small home ranges and large local ecological impacts of pet cats [United Kingdom]. Movebank Data Repository. <a href="http://dx.doi.org/10.5441/001/1.pf315732">doi:10.5441/001/1.pf315732</a></p></li>
+</ul>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

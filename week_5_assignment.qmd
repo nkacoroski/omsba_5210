@@ -12,9 +12,244 @@ cats_uk <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/ti
 cats_uk_reference <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-01-31/cats_uk_reference.csv')
 ```
 
+Data is of pet cat characteristics and movements from a GPS tracker collected by volunteers in the U.K. during 2017.
+
 ## Exploratory Data Analysis
 
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(vtable)
+library(lubridate)
+library (geosphere)
+library(RColorBrewer)
+
+# Review summary information
+vtable::vtable(cats_uk_reference, lush = TRUE)
+vtable::vtable(cats_uk, lush = TRUE)
+vtable::sumtable(cats_uk_reference)
+vtable::sumtable(cats_uk)
+```
+
+There is a lot of data to explore. As both a birder and a cat lover, I know that cats allowed outdoors can have a negative impact on wildlife, so I decided to focus on cat indoor hours and prey per month first. Of interest, there is no completely indoor cat, average prey catch per month ranges from zero to 17.5, and a field called "hunt," which means if the cat was allowed to hunt or not. I'm not sure if this means the cat was a dedicated mouser or just not controlled. I think the latter and I would expect a cat not allowed to hunt would have no prey. Also of note, there are 9 observations with a missing hunt value. Most cats (88%) are allowed to hunt.
+
+```{r}
+
+# Review NA values.
+cats_uk_reference %>%
+  select(tag_id, animal_id, hunt, prey_p_month, hrs_indoors) %>%
+  filter(is.na(hunt) == TRUE)
+
+# No prey caught and varying number of hours indoors. Not sure how to address yet.
+# Sanity check - if cats are not allowed to hunt, did they catch any prey?
+cats_uk_reference %>%
+  select(tag_id, animal_id, hunt, prey_p_month, hrs_indoors) %>%
+  filter(hunt == FALSE) %>%
+  group_by(prey_p_month) %>%
+  summarize(n())
+
+# Confirmed cats not allowed to hunt means they don't have the opportunity to catch prey, so perhaps the cat was confined in a way that did not allow prey catching when they went outdoors. Focusing on cats able to hunt. Leaving out cats where it is not known if the cat can hunt or not because none of them caught any prey and it is unknown if they had the opportunity catch prey.
+
+hunting_cats <- cats_uk_reference %>%
+  filter(hunt == TRUE)
+
+vtable::vtable(hunting_cats, lush = TRUE)
+vtable::sumtable(hunting_cats)
+```
+
+There are 81 cats allowed to hunt. Approximate prey per month ranges from 0.5 to 17.5 (half values because approximate average per month). There is approximately the same number of male and female cats (45.7% female, 54.3% male), and most cats are fixed (97.4%). Indoor hours ranges from 2.5 to 22.5 hours with a mean of 11-ish hours, with most cats between 7.5 and 12.5 hours indoors. Cat age ranges from 0 (less than a year old) to 13 with an average of 5.4 years, with most cats between 3 and 7.25 years. Moving on to explore graphically.
+
+```{r}
+# View approximate prey per month distribution
+ggplot(hunting_cats, aes(x=prey_p_month)) + 
+          geom_histogram()
+  
+# There are five unique values. Questionaire might have binned somehow but unable to check. 
+hunting_cats %>%
+  group_by(prey_p_month) %>%
+  summarize(n())
+
+# View indoor hours per day distribution.
+ggplot(hunting_cats, aes(x=hrs_indoors)) + 
+          geom_histogram()
+
+# Also binned with 5 unique values, so I suspect might be more of a range but Im not sure.
+hunting_cats %>%
+  group_by(hrs_indoors) %>%
+  summarize(n())
+
+# Check for relationships between variables.
+ggplot(hunting_cats, aes(x = hrs_indoors, y = prey_p_month)) + 
+          geom_point()
+
+# As expected, the more time a cat is indoors, the fewer prey it catches.
+ggplot(hunting_cats, aes(x = animal_sex, y = prey_p_month)) + 
+          geom_boxplot()
+
+# There is more variance in prey catching with males than females, but both have an average of ~3 per month.
+ggplot(hunting_cats, aes(x = animal_reproductive_condition, y = prey_p_month)) + 
+          geom_boxplot()
+
+# Cats that are fixed seem to have the same prey per month, but unfixed cats or if it is unknown have fewer prey per month. Could be not enough data or because unfixed cats are too young to hunt well.
+ggplot(hunting_cats, aes(x = age_years, y = prey_p_month)) + 
+          geom_point()
+
+# Cats that catch the most prey are between 2 and 6 years old. 
+hunting_cats %>%
+  filter(animal_reproductive_condition == "Not fixed") %>%
+  group_by(age_years) %>%
+  summarize(n())
+
+# Not fixed cats are actually not less than a year old.
+
+
+```
+
+Now let's see what can be said about the movement data for hunting cats. Is there a difference with prey caught and distance traveled?
+
+```{r}
+# Graph movement for one cat just to view.
+cats_uk %>%
+  filter(tag_id == "Ares") %>%
+  ggplot(aes(x = location_long, y = location_lat)) +
+  geom_path(aes(color = as.numeric(timestamp)))
+
+# Graph movement of one cat in one day to view. 
+cats_uk %>%
+  mutate(date = as_date(timestamp)) %>%
+  filter(tag_id == "Ares", date == "2017-06-24") %>%
+  ggplot(aes(x = location_long, y = location_lat)) +
+  geom_path(aes(color = timestamp))
+
+# Calculate distance of one cat in one day.
+cats_uk %>%
+  mutate(date = as_date(timestamp)) %>%
+  filter(tag_id == "Ares", date == "2017-06-24") %>%
+  mutate(meters = distGeo(cbind(location_long, location_lat),
+                          cbind(lead(location_long), lead(location_lat)))) %>%
+  summarize(miles = sum(meters, na.rm = TRUE) /1609.344)
+  
+
+# Calculate the distance of cats each day and night in miles.
+cat_distances <- cats_uk %>%
+  group_by(tag_id) %>%
+  mutate(meters = distGeo(cbind(location_long, location_lat),
+                          cbind(lead(location_long), lead(location_lat)))) %>%
+  mutate(date = date(timestamp),
+         hour = if_else((hour(timestamp) >= 6) &
+                        (hour(timestamp) < 18), "Day", "Night")) %>%
+  # Sum distances by date and Day/Night
+  group_by(tag_id, date, hour) %>%
+  summarize(miles = sum(meters, na.rm = TRUE) /1609.344)
+
+vtable::vtable(cat_distances, lush = TRUE)
+# One cat went 53 miles?!
+
+vtable::sumtable(cat_distances)
+# Time is pretty equal between day and night. Most cats travel between less than a mile to half a mile.
+
+ggplot(cat_distances, aes(x=miles)) + 
+          geom_histogram()
+
+# Yep. Definitely seems to be an outlier.
+
+ggplot(cat_distances, aes(x = hour, y = miles)) +
+  geom_boxplot()
+
+# Might make sense to remove outliers, but first merging dataframes.
+cats <- hunting_cats %>%
+  left_join(cat_distances) %>%
+  select(animal_id, prey_p_month, animal_reproductive_condition, animal_sex,
+         hrs_indoors, age_years, date, hour, miles)
+  
+ggplot(cats, aes(x = date, y = miles)) +
+  geom_point()
+
+vtable::vtable(cats, lush = TRUE)
+vtable::sumtable(cats)
+
+# Do cats travel more in the day or at night?
+cats %>%
+  group_by(animal_id, hour) %>%
+  summarize(avg_miles = mean(miles)) %>%
+  group_by(hour) %>%
+  summarize(mean(avg_miles), sd(avg_miles))
+
+# It looks like cats travel a tenth of a mile more during the night on average, but standard deviation is high. Run again with out outliers (greater that 10 miles).
+cats %>%
+  filter(miles <= 10) %>%
+  group_by(animal_id, hour) %>%
+  summarize(avg_miles = mean(miles)) %>%
+  group_by(hour) %>%
+  summarize(mean(avg_miles), sd(avg_miles))
+
+
+cats %>%
+  filter(miles <= 10) %>%
+  group_by(animal_id, hour) %>%
+  summarize(avg_miles = mean(miles)) %>%
+  group_by(hour) %>%
+  summarize(avg = mean(avg_miles), sd = sd(avg_miles)) %>%
+  ggplot(aes(x = hour, y = avg)) + 
+  geom_errorbar(aes(ymin = avg - sd, ymax = avg + sd), width=.3) +
+  geom_point(size=2)
+
+# Standard deviation still. Perhaps it makes a difference by approximate prey caught per month. Do cats that travel more catch more prey?
+cats %>%
+  group_by(animal_id, prey_p_month) %>%
+  summarize(avg = mean(miles), sd = sd(miles)) %>%
+  ggplot(aes(x = prey_p_month, y = avg)) + 
+  geom_errorbar(aes(ymin = avg - sd, ymax = avg + sd), width=.3) +
+  geom_point(size=2)
+  
+# I don't think so. What is in common for cats that catch the most prey?
+
+my_palette <- brewer.pal(name="Blues",n=9)[5:9]
+
+cats %>%
+  group_by(animal_id, date, hrs_indoors, animal_sex, age_years, prey_p_month) %>%
+  summarize(mpd = sum(miles)) %>%
+  group_by(animal_id, hrs_indoors, animal_sex, age_years, prey_p_month) %>%
+  summarize(avg_mpd = median(mpd)) %>%
+  ggplot(aes(x = hrs_indoors, y = avg_mpd, color = factor(prey_p_month))) +
+  geom_point() +
+  scale_color_manual(values = my_palette) +
+  theme_minimal()
+
+# It looks like cats that catch more prey spend less time traveling and less time outdoors.
+```
+
 ## Visualization Story 
+
+The story that I think I can tell with the data is that the cats with the highest prey catch spend less time indoors or traveling. Following is my sketch.
+
+![](images/cat_viz.jpg)
+
+My original design was to use a scatter plot and only highlight the cats with an average monthly catch of 17.5 prey. After playing around a bit, I decided that I thought that faceting was more informative. Of note, I used the median distance traveled per day because there was some skew towards high values.
+
+```{r}
+prey_catch_graph <- cats %>%
+  group_by(animal_id, date, hrs_indoors, animal_sex, age_years, prey_p_month) %>%
+  summarize(mpd = sum(miles)) %>%
+  group_by(animal_id, hrs_indoors, animal_sex, age_years, prey_p_month) %>%
+  summarize(avg_mpd = median(mpd)) %>%
+  ggplot(aes(x = hrs_indoors, y = avg_mpd, color = factor(prey_p_month))) +
+  geom_point() +
+  facet_wrap(vars(prey_p_month), ncol = 5) +
+  labs(title = "Cats with the highest prey catch spend less time indoors and traveling",
+       subtitle = "Average Prey Catch per Month") +
+  xlab("Average Daily Indoor Time (Hours)") +
+  ylab("Average Daily Travel Time (Miles)") +
+  scale_color_manual(values = my_palette) +
+  theme_minimal() +
+  theme(strip.text = element_text(face = "bold"),
+        legend.position="none",
+        plot.subtitle=element_text(hjust=0.5))
+
+prey_catch_graph
+
+ggsave("prey_catch_graph.png")
+```
 
 ## Data Citations
 
