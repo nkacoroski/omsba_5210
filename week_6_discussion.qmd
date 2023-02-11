@@ -1,0 +1,241 @@
+---
+title: "Week 6 Discussion"
+format: html
+editor: visual
+---
+
+## Prompt
+
+Find a package with a geometry in it (could be one of the ones we cover) and read one of its vignettes (try browseVignettes('packagename'). Show your classmates an example of that geometry (you can copy/paste from the vignette or some other source, you don't necessarily need to make it yourself), and explain what kinds of stories you think that geometry might be very effective at helping to tell.
+
+## Response
+
+Inspired by the course material discussing that sometimes bar charts are overused and a treemap might be a good geometry choice instead of a pie chart, I went back to my data visualization critique and decided to to see if a treemap actually did seem like an effective visualization.
+
+```{r}
+# Import libraries.
+library(treemap)
+library(tidyverse)
+library(d3treeR)
+library(ggplot2)
+library(treemapify)
+
+# Explore vignettes.
+browseVignettes("treemap")
+```
+
+There is one vignette related to treemaps - mapping to color palettes. In general, only two arguments, type and palette, are used for mapping to a color palette. The range argument does not influence the mapping.
+
+The type can be either value or manual. Value interprets the palette as a diverging color and maps so that 0 equals the middle color, -max(abs(values) is the left-end color, and max(abs(values) is the right-end color. Manual maps so that the mean equals the middle color, the minimum is the left-end color, and the maximum is the right-end color.
+
+There is also the option to create a custom map using the mapping argument. When this argument is used, value and manual types are identical. The range argument may be used to view the full range of colors in the legend.
+
+```{r}
+# Create budget data.
+wdfw <- data.frame(category = c("State General",
+                                "Federal General",
+                                "Fish, Wildlife, and Conservation",
+                                "Local General",
+                                "Other",
+                                "Limited Fish and Wildlife"),
+                   amount = c(177,
+                              131.1,
+                              75,
+                              62.5,
+                              38,
+                              32.8)
+                   )
+
+treemap(wdfw,
+        index = "category",
+        vSize = "amount",
+        type = "index")
+```
+
+I don't find this visualization better than a bar chart. I like how it seems like a part of a whole, but overall does not seem more helpful.
+
+A treemap is intended to display hierarchical data as a set of nested rectangles. Each group is a rectangle that is proportional to its value.
+
+Perhaps adding subgroups for level (federal, state, local, departmental) would make it more useful?
+
+treemap(wdfw,
+
+index = c("level", "category"),
+
+vSize = "amount",
+
+type = "index")
+
+```{r}
+wdfw <- wdfw %>%
+  mutate(level = case_when(category == "Federal General" ~ "Federal",
+                           category %in% c("State General", "Other") == TRUE ~ "State",
+                           category == "Local General" ~ "Local",
+                           category %in% c("Fish, Wildlife, and Conservation",
+                                           "Limited Fish and Wildlife") == TRUE ~ "Department",
+                           TRUE ~ "Error"))
+
+treemap(wdfw,
+        index = c("level", "category"),
+        vSize = "amount",
+        type = "index")
+```
+
+I do think this visualization is more helpful. Of note, more than a few groups makes the visualization confusing. I don't think that is the case here, but a way to get around is to make interactive.
+
+interactive_wdfw_budget
+
+```{r}
+wdfw_budget <- treemap(wdfw,
+        index = c("level", "category"),
+        vSize = "amount",
+        type = "index")
+
+interactive_wdfw_budget <- d3tree2(wdfw_budget,  rootname = "Washington Department of Fish and Wildlife Budget" )
+
+interactive_wdfw_budget
+```
+
+The interactive aspect is cool and I can see how it would be helpful with more groups and hierarchies. I think I'd like to see how I can make it more visually appealing and informational with percentages and amounts.
+
+```{r}
+# Basic map
+treemap(wdfw,
+        index = c("level", "category"),
+        vSize = "amount",
+        type = "index")
+
+# Put level in the center and categories in the upper right.
+treemap(wdfw,
+        index = c("level", "category"),
+        vSize = "amount",
+        type = "index",
+        align.labels=list(
+        c("center", "center"), 
+        c("left", "top")
+        ))
+
+# Make label background transparent
+treemap(wdfw,
+        index = c("level", "category"),
+        vSize = "amount",
+        type = "index",
+        bg.labels = 0,
+        align.labels=list(c("center", "center"), 
+                          c("left", "top")),
+        )
+
+# Change font type and color.
+treemap(wdfw,
+        index = c("level", "category"),
+        vSize = "amount",
+        type = "index",
+        bg.labels = 0,
+        align.labels=list(c("center", "center"), 
+                          c("left", "top")),
+        fontcolor.labels=c("white","black"),
+        fontface.labels=c(2,1),
+        )
+
+# Change borders.
+treemap(wdfw,
+        index = c("level", "category"),
+        vSize = "amount",
+        type = "index",
+        bg.labels = 0,
+        align.labels=list(c("center", "center"), 
+                          c("left", "top")),
+        fontcolor.labels=c("white","white"),
+        fontface.labels=c(2,1),
+        border.col=c("white","white"),
+        border.lwds=c(4,2)
+        )
+
+# Change title and color.
+treemap(wdfw,
+        index = c("level", "category"),
+        vSize = "amount",
+        type = "index",
+        bg.labels = 0,
+        align.labels=list(c("center", "center"), 
+                          c("left", "top")),
+        fontcolor.labels=c("white","white"),
+        fontface.labels=c(2,1),
+        border.col=c("white","white"),
+        border.lwds=c(4,2),
+        palette = "Set1",
+        title = "Washington Department of Fish and Wildlife 2021-23 Operating Budget",
+        fontsize.title=12
+        )
+
+# Add custom color map to match department colors
+# Add amounts and percentages
+# Add subtitle
+# Suppress category if category = level
+```
+
+I'm not seeing any options to add percentages reviewing documentation and online. I think maybe using a different combinations of libraries, such as ggplot2, treemapify, and plotly might work better.
+
+```{r}
+# Re-map funding types.
+wdfw <- wdfw %>%
+  mutate(type = case_when(category == "State General" ~ "General",
+                          category == "Federal General" ~ "General",
+                          category == "Fish, Wildlife, and Conservation" ~ "General",
+                          category == "Local General" ~ "General",
+                          category == "Other" ~ "Dedicated",
+                          category == "Limited Fish and Wildlife" ~ "Dedicated",
+                          TRUE ~ "Error"),
+         percent = case_when(category == "State General" ~ 34,
+                          category == "Federal General" ~ 25,
+                          category == "Fish, Wildlife, and Conservation" ~ 15,
+                          category == "Local General" ~ 12,
+                          category == "Other" ~ 8,
+                          category == "Limited Fish and Wildlife" ~ 6,
+                          TRUE ~ 0)
+         )
+
+# Create with ggplot2 and treemapify.
+wdfw_budget_viz <- ggplot(wdfw, aes(area = amount, 
+                 fill = level, 
+                 subgroup = level
+                 )
+       ) +
+  geom_treemap(color = "white", 
+               size = 2
+               ) +
+  geom_treemap_text(aes(label = paste(type,
+                                      " ($",
+                                      amount,
+                                      "M, ",
+                                      percent,
+                                      "%)",
+                                      sep = "")
+                        ),
+                    place = "topleft",
+                    color ="white", 
+                    padding.x = grid::unit(2, "mm"),
+                    padding.y = grid::unit(2, "mm"),
+                    size = 10,
+                    reflow = TRUE
+                    ) +
+  theme(legend.position = "none",
+        plot.title = element_text(face="bold")) +
+  geom_treemap_subgroup_border(color = "white", 
+                               size = 7) +
+  geom_treemap_subgroup_text(place = "center", 
+                             grow = FALSE,
+                             color = "white", 
+                             size = 20,
+                             fontface = "bold",
+                             padding.x = grid::unit(2, "mm"),
+                             padding.y = grid::unit(2, "mm")
+                             ) +
+  labs(title = "Washington Department of Fish and Wildlife 2021-23 Operating Budget",
+       subtitle = "Funding breakdown of the $515 million total by source and use (General vs. Dedicated)") +
+  scale_fill_manual(values = c("#017B54", "#8CCED5", "#FED021", "#003055"))
+
+wdfw_budget_viz
+
+ggsave("wdfw.png")
+```

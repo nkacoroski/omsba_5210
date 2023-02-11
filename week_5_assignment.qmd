@@ -219,7 +219,7 @@ cats %>%
 # It looks like cats that catch more prey spend less time traveling and less time outdoors.
 ```
 
-## Visualization Story 
+## Visualization Story
 
 The story that I think I can tell with the data is that the cats with the highest prey catch spend less time indoors or traveling. Following is my sketch.
 
@@ -256,5 +256,3 @@ ggsave("prey_catch_graph.png")
 -   Kays R, Dunn RR, Parsons AW, Mcdonald B, Perkins T, Powers S, Shell L, McDonald JL, Cole H, Kikillus H, Woods L, Tindle H, Roetman P (2020) The small home ranges and large local ecological impacts of pet cats. Animal Conservation. [doi:10.1111/acv.12563](http://dx.doi.org/10.1111/acv.12563)
 
 -   McDonald JL, Cole H (2020) Data from: The small home ranges and large local ecological impacts of pet cats \[United Kingdom\]. Movebank Data Repository. [doi:10.5441/001/1.pf315732](http://dx.doi.org/10.5441/001/1.pf315732)
-
-
