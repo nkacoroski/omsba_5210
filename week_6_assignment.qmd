@@ -1,0 +1,48 @@
+---
+title: "Week 6 Tidy Tuesday Assignment"
+author: "Natasha Kacoroski"
+format: html
+editor: visual
+---
+
+## Prompt
+
+1\. Go to the [Tidy Tuesday GitHub Repository (Links to an external site.)](https://github.com/rfordatascience/tidytuesday)
+
+2\. Under "Datasets" go to the most recent week (pick the one that posted the Tuesday *just before this week's Tuesday class*). This means that if you're doing the work close to the due date, you may be using the second-most-recent data posted. Click on the link in the "Data" column (the first link in the row)
+
+3\. Read the README about the data. Note the code for downloading the data directly or using the **tidytuesdayR** package. Note there's also a "cleaning script" available, but usually this is code they've \*already applied\* to the data and you don't need to worry about it.
+
+4\. Look at the data (and probably do some preliminary calculations and graphs) and think of a story that you can tell with the data.
+
+5\. Write down, in a single sentence, the story you are trying to get across.
+
+6\. You will be using R and ggplot2 to make a graph to tell that story. While you won't be turning your sketch in, draw, **by hand**, a sketch of what you want your visualization to look like. Just give a sense of the layout, what kind of graph you want it to be, and what you want included. You don't need to include all the details or accurately graph the data. You can do this on paper or with MS Paint, draw.io, etc. 
+
+7\. Use ggplot to make that graph (it's okay if your plans change between sketch and ggplot) and include everything in an RMarkdown doc.
+
+## Preparation
+
+This week's Tidy Tuesday data consists of daily stock prices and volume of 14 different tech companies. All stock_symbols have 3271 prices, except META (2688) and TSLA (3148) because they were not publicly traded for part of the period examined.
+
+```{r}
+# Import libraries.
+library(tidyverse)
+library(ggplot2)
+library(vtable)
+
+# Import data.
+big_tech_stock_prices <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-07/big_tech_stock_prices.csv')
+big_tech_companies <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-07/big_tech_companies.csv')
+```
+
+## Exploratory Data Analysis
+
+```{r}
+vtable::vtable(big_tech_stock_prices, lush = TRUE)
+
+```
+
+## Citations
+
+-   Yahoo Finance via [Kaggle](https://www.kaggle.com/datasets/evangower/big-tech-stock-prices) (by [Evan Gower](https://github.com/rfordatascience/tidytuesday/issues/509)).
