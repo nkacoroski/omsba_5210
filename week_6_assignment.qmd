@@ -151,7 +151,7 @@ Okay, I definitely think there is an interesting story here. I don't know why IB
 
 ![](ibm_draft.jpg)
 
-I think a line graph makes sense. Date on the x-axis and Adjusted Closing Price on the y-axis. I want to play around with the scales and aggregation to see if daily or monthly, and what amount increments make sense. I think it is important to call out when COVID-19 hit the United States and possibly the maximum for IBM. I looked the decline and found this article, [IBM\'s sales slump turns stock into Dow\'s lone loser of 2013](https://www.livemint.com/Money/LooXbsdw25UTCatFE6eR9K/IBMs-sales-slump-turns-stock-into-Dows-lone-loser-of-2013.html), that seems to indicate the decline is due to lower sales with technology hardware. It might be important to point out where IBM's decline started. I also want to use color and/or linetype to differentiate average vs. IBM.
+I think a line graph makes sense. Date on the x-axis and Adjusted Closing Price on the y-axis. I want to play around with the scales and aggregation to see if daily or monthly, and what amount increments make sense. I think it is important to call out when COVID-19 hit the United States and possibly the maximum for IBM. I looked the decline and found this article, [IBM's sales slump turns stock into Dow's lone loser of 2013](https://www.livemint.com/Money/LooXbsdw25UTCatFE6eR9K/IBMs-sales-slump-turns-stock-into-Dows-lone-loser-of-2013.html), that seems to indicate the decline is due to lower sales with technology hardware. It might be important to point out where IBM's decline started. I also want to use color and/or linetype to differentiate average vs. IBM.
 
 ```{r}
 ibm_adj_close %>%
