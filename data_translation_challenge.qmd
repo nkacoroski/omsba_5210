@@ -1,0 +1,32 @@
+---
+title: "Data Translation Challenge"
+author: "Natasha Kacoroski"
+format: html
+editor: visual
+---
+
+## Assignment Prompt
+
+Tell a coherent and interesting story about Amazon sales of technology products placed over several months in 2019 in a select number of urban ZIP codes with at least five well-designed and well-executed visualizations.
+
+-   State intended audience and purpose
+
+-   Deliverable is a RMarkdown / Quarto document with visualizations and text linking them together to tell story. Report style for a business setting.
+
+## Data Preparation
+
+Import libraries and data.
+
+```{r}
+# Libraries
+library(tidyverse)
+library(ggplot2)
+library(vtable)
+
+# Data
+load("./data/sales_data.Rdata")
+
+zip_info <- read_csv("./data/zip_info.csv")
+```
+
+## Exploratory Data Analysis
