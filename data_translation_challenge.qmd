@@ -1,5 +1,5 @@
 ---
-title: "Data Translation Challenge"
+title: "Data Translation Challenge EDA and Notes"
 author: "Natasha Kacoroski"
 format: html
 editor: visual
@@ -7,11 +7,17 @@ editor: visual
 
 ## Assignment Prompt
 
-Tell a coherent and interesting story about Amazon sales of technology products placed over several months in 2019 in a select number of urban ZIP codes with at least five well-designed and well-executed visualizations.
+Tell a coherent and interesting story about Amazon sales of technology products placed over several months in 2019 in a select number of urban ZIP codes with at least five well-designed and well-executed visualizations. Deliverable is an RMarkdown / Quarto business report that includes audience, purpose, visualizations, and text linking them together to tell story. Notes:
 
--   State intended audience and purpose
+-   Optional to use ZIP Info data
 
--   Deliverable is a RMarkdown / Quarto document with visualizations and text linking them together to tell story. Report style for a business setting.
+-   Be careful about conclusions as data is a subset of population. Do not say more than what the data represents.
+
+-   Optional to supplement with other data.
+
+-   Think about what useful information does a visualization convey and how does it tell the report story / provide takeaway.
+
+-   Optional to do a map, but geographic data is sparse so may not be useful. Consider using leaflet and use discretion.
 
 ## Data Preparation
 
@@ -22,11 +28,575 @@ Import libraries and data.
 library(tidyverse)
 library(ggplot2)
 library(vtable)
+library(lubridate)
+library(scales)
+library(readxl)
+library(ggbreak)
 
 # Data
 load("./data/sales_data.Rdata")
+
 
 zip_info <- read_csv("./data/zip_info.csv")
 ```
 
 ## Exploratory Data Analysis
+
+Explore data to determine what stories exist and determine what might be an interesting purpose and audience.
+
+```{r}
+# Sales
+vtable::vtable(sales, lush = TRUE)
+
+# ZIP Info
+vtable::vtable(zip_info, lush = TRUE)
+```
+
+Sales data includes eight variables and 185950 rows. They are:
+
+-   Product: product ordered, character, 19 unique
+
+-   Quantity: amount of product ordered, character, 9 unique
+
+-   PriceEach: price per individual product, character, 23 unique
+
+-   DateTime: date and time of day product ordered, POSIXct, median July 17th 2019 17:20PM, lots of unique values (expected)
+
+-   Date: date product ordered, date, median July 17th 2019, 366 unique (includes Jan 1st 2020)
+
+-   ZIP: ZIP code where order sent, character, 10 unique
+
+-   State: state where order sent, character, 8 unique
+
+-   City: city where order sent, character, 9 unique
+
+No missing values. Need to convert Quantity and PriceEach to numeric. Data actually includes Jan 1st 2020 (different from assignment prompt). Only 10 ZIP codes, supposedly all in urban areas. There is a Portland Oregon and a Portland Maine. Consider group products by type (i.e. monitors).
+
+ZIP Info includes 13 variables and 10 rows. They are:
+
+-   ZIP: zip code, numeric
+
+-   TotalPopulation: total population of zip code, numeric, mean is 26,051
+
+-   MedianHHIncome: median annual household income for zip code, numeric, mean is \$81,151, use 2020 ACS instead of 2018
+
+-   PCIncome: annual per-capita income for ZIP, sums up incomes in ZIP and divides by number of people (includes non-earners, children), uses 2020 ACS instead of 2018, numeric, mean is \$57,085
+
+-   MedianAge: zip code median age, numeric, average median age is 34
+
+-   Race_White: number of zip code population that are white, numeric, average 16,140
+
+-   Race_Black: number of Black people in ZIP code, numeric, average is 2,179
+
+-   Race_American_Indian: number of American Indian people in ZIP code, numeric, average is 426
+
+-   Race_Asian: number of Asian people in ZIP code, numeric, average is 3,238
+
+-   Race_Pacific_Islander: number of Pacific Islander people in ZIP code, numeric, average is 71
+
+-   Race_Other: number of other race people (may include Pacific Islander?) in ZIP code, numeric, average 5,003
+
+-   Ethnicity_Hispanic: number of hispanic people in ZIP code, numeric, average 9,223
+
+-   Citizens: number of citizens in ZIP code, numeric, average is 17,171
+
+ZIP code population information is from 2018 American Community Survey (ACS) estimates - use five years of ACS data from 2014-2018 to estimate 2018 numbers. Races and ethnicity are non-exclusive (someone may be both black and white, black and hispanic). To get proportions, divide by TotalPopulation. Some ZIP codes have leading zeros.
+
+```{r}
+# Convert Quantity and PriceEach to numeric.
+sales <- sales %>%
+  mutate(Quantity = as.numeric(Quantity),
+         PriceEach = as.numeric(PriceEach))
+
+# Explore univariate, non-graphically
+vtable::vtable(sales, lush = TRUE)
+vtable::sumtable(sales)
+
+# See unique products. 
+sales %>%
+  distinct(Product)
+
+# See unique states.
+sales %>%
+  distinct(State)
+
+# See unique cities.
+sales %>%
+  distinct(City)
+```
+
+Quantity ranges from 0-9 with an average of just over 1. Most orders are for a single product. Price ranges from \$2.99 to \$1,700 with an average of \$184.40. Likely some very expensive and inexpensive products, large standard deviation (\~\$332). Most products are between \$11.95 and \$150.
+
+-   Does price for the same product vary by location? Probably not as 19 products and 17 unique prices.
+
+Products include charging cables (2), headphones (3), phone (3), laptop (2), monitor (4), batteries (2), TV (1), dryer (1), washing machine (1).
+
+```{r}
+# Explore univariate graphically.
+# Product.
+ggplot(sales, aes(x = Product)) +
+  geom_bar() +
+  coord_flip()
+
+# Add product type.
+sales <- sales %>%
+  mutate(type = case_when(grepl("Headphones", Product) ~ "headphones",
+                          grepl("Phone", Product) ~ "phone",
+                          grepl("Cable", Product) ~ "charging cable",
+                          grepl("Laptop", Product) ~ "laptop",
+                          grepl("Batteries", Product) ~ "batteries",
+                          grepl("Monitor", Product) ~ "monitor",
+                          Product == "Flatscreen TV" ~ "tv",
+                          grepl("LG", Product) ~ "laundry appliance",
+                          TRUE ~ "Error"))
+
+ggplot(sales, aes(x = type)) +
+  geom_bar() +
+  coord_flip()
+
+# Quantity.
+ggplot(sales, aes(x = Quantity)) +
+  geom_histogram()
+
+# PriceEach.
+ggplot(sales, aes(x = PriceEach)) +
+  geom_histogram()
+
+# DateTime.
+ggplot(sales, aes(x = DateTime)) +
+  geom_histogram()
+
+# Add time column. 
+sales <- sales %>%
+  mutate(order_hour = hour(DateTime))
+
+ggplot(sales, aes(x = order_hour)) +
+  geom_bar()
+
+# Date.
+ggplot(sales, aes(x = Date)) +
+  geom_histogram()
+
+sales <- sales %>%
+  mutate(day_of_week = wday(Date, label = TRUE),
+         day_of_month = mday(Date),
+         week_of_year = week(Date),
+         month_of_year = month(Date, label = TRUE))
+
+ggplot(sales, aes(x = day_of_week)) +
+  geom_bar()
+
+ggplot(sales, aes(x = day_of_month)) +
+  geom_bar()
+
+ggplot(sales, aes(x = week_of_year)) +
+  geom_bar()
+
+ggplot(sales, aes(x = month_of_year)) +
+  geom_bar()
+
+# ZIP Code.
+ggplot(sales, aes(x = ZIP)) +
+  geom_bar()
+
+# City and State (merge together as some cities have the same name).
+sales <- sales %>%
+  unite("city_state", City:State, sep= ", ", remove = FALSE)
+
+ggplot(sales, aes(x = city_state)) +
+  geom_bar() +
+  coord_flip()
+```
+
+Product / Product Type: Most orders are charging cables, followed by batteries, then headphones. Washing machines and dryers are fewest orders. I think it makes sense to group by type. Grouping by product type, shows that actually most orders are for headphones, closely followed charging cables, then batteries. Laundry appliances are still the most infrequently ordered product. Another categorization is consumer electronic vs. major home appliance, but that really only separates out the laundry appliances. Might make sense to focus on consumer electronics for story - laundry machines don't really fit.
+
+Quantity: As expected, most orders are for a single product. heavily skewed right. Does it make sense to focus on single product orders only? Or investigate what products are bought together? Likely makes sense to breakdown by product.
+
+PriceEach: Also heavily skewed right (as expected). Most product orders are inexpensive. I would expect this as most product orders are cheaper items, such as batteries and charging cables.
+
+DateTime: Looks like there is a minor peak after April, and major peak November - December. Later peak makes sense (winter holidays), is the spring peak due to May labor day sales?
+
+Hour: There are peaks at 12PM and 7PM, with a major dip between 3-4AM and minor dip at 3PM. Might make sense to group by time of date category, such as day / night, or morning, day, evening, and night.\
+\
+Date: Same as DateTime. Consider grouping by day of week, day of month, week of year, month of year. Look at Black Friday, Amazon Day, and Cyber Monday, specifically. Sales all seem to be the same for day of the week, slightly higher on Tuesday. Same for day of the month, there is a slight drop-off for the last few days of the month. Week of the month mirrors datetime, with a peak in April and later in the year. The higher peak later in the year is split into a peak in October, slight dip in November, and higher peak in December. This is the same for month of the year, highest peak is December, followed by October, and then April. Why is this the case? I was thinking that it would be in July (Prime Day / 4th of July Sales), November (Black Friday / Cyber Monday), and December (Winter Holidays).
+
+ZIP: Variety in sales with different ZIP codes. 94016 has the most orders and 04101 has the least.
+
+City & State: Lots of variety as well. Los Angeles CA has the most orders and Portland ME has the least. Two of the cities are from California and two from Texas.
+
+Difficult to work with location data since they are a sample and not representative. Consider using ZIP info information and creating per capita information?
+
+```{r}
+# Explore multivariate, non-graphically.
+# Total quantity by product.
+sales %>%
+  group_by(Product) %>%
+  summarize(cnt = sum(Quantity)) %>%
+  mutate(percent = round(cnt / sum(cnt), 3)) %>% 
+  arrange(desc(percent))
+
+# Total quantity by product type.
+sales %>%
+  group_by(type) %>%
+  summarize(cnt = sum(Quantity)) %>%
+  mutate(percent = round(cnt / sum(cnt), 3)) %>% 
+  arrange(desc(percent))
+
+# Total sales amount by product.
+sales <- sales %>%
+  mutate(total = Quantity * PriceEach)
+
+ggplot(sales, aes(x = total)) +
+  geom_histogram()
+
+# Most sales less than $100. 
+
+sales %>%
+  group_by(Product) %>%
+  summarize(cnt = sum(total)) %>%
+  mutate(percent = round(cnt / sum(cnt), 3)) %>%
+  arrange(desc(percent))
+
+# Total sales by product type
+sales %>%
+  group_by(type) %>%
+  summarize(cnt = sum(total)) %>%
+  mutate(percent = round(cnt / sum(cnt), 3)) %>%
+  arrange(desc(percent))
+
+# Price per Product (same price throughout year for each product).
+sales %>%
+  group_by(Product) %>%
+  summarize(Price = sum(PriceEach) / n()) %>%
+  arrange(desc(Price))
+
+# Quantity by ZIP. 
+sales %>%
+  group_by(ZIP) %>%
+  summarize(cnt = sum(Quantity)) %>%
+  mutate(percent = round(cnt / sum(cnt), 3)) %>% 
+  arrange(desc(percent))
+
+# Total sales by ZIP
+sales %>%
+  group_by(ZIP) %>%
+  summarize(cnt = sum(total)) %>%
+  mutate(percent = round(cnt / sum(cnt), 3)) %>%
+  arrange(desc(percent))
+
+# Quantity and Total sales by city state.
+sales %>%
+  group_by(city_state) %>%
+  summarize(cnt = sum(Quantity)) %>%
+  mutate(percent = round(cnt / sum(cnt), 3)) %>% 
+  arrange(desc(percent))
+
+sales %>%
+  group_by(city_state) %>%
+  summarize(cnt = sum(total)) %>%
+  mutate(percent = round(cnt / sum(cnt), 3)) %>% 
+  arrange(desc(percent))
+
+# Quantity and total sales by day of week.
+sales %>%
+  group_by(day_of_week) %>%
+  summarize(cnt = sum(Quantity)) %>%
+  mutate(percent = round(cnt / sum(cnt), 3)) %>% 
+  arrange(desc(percent))
+
+sales %>%
+  group_by(day_of_week) %>%
+  summarize(cnt = sum(total)) %>%
+  mutate(percent = round(cnt / sum(cnt), 3)) %>% 
+  arrange(desc(percent))
+
+# Quantity and total sales by month
+sales %>%
+  group_by(month_of_year) %>%
+  summarize(cnt = sum(Quantity)) %>%
+  mutate(percent = round(cnt / sum(cnt), 3)) %>% 
+  arrange(desc(percent))
+
+sales %>%
+  group_by(month_of_year) %>%
+  summarize(cnt = sum(total)) %>%
+  mutate(percent = round(cnt / sum(cnt), 3)) %>% 
+  arrange(desc(percent))
+
+```
+
+Quantity by Product: Cables, batteries, and headphones have the greatest quantities (greater than 50%).
+
+Quantity by Product Type: Confirmed the above, cables, batteries, and headphones are all in the 20-ish % range, so over 60% of items sold. Followed by monitors at 12.9% then everything else is less than 10%.
+
+Quantity by Product: laptops and phones generate the most revenue (especially Apple brand). Batteries, charging cables, and most headphones produce the least revenue. Consider comparing Apple brand to other items?
+
+Quantity by Product Type: Laptops, phones, then monitors produce the most revenue, charging cables and batteries the least.
+
+Price Per Product: As expected laptops and phones are the most expensive products and Apple brand products are more expensive than non-Apple brand products.
+
+Quantity by ZIP: Some ZIPs purchase more items than others, 94016 being the most and 04101 the least.
+
+Total Revenue by ZIP: Matches with quantity by ZIP.
+
+Quantity and Revenue by City State: Matches. Most in CA cities, the NYC. least in Portland ME.
+
+Quantity and Revenue by Day of Week: No real variation.
+
+Quantity and Revenue by Month of Year: Matches. Highest months are December, October, and April. Lowest are February and August.
+
+```{r}
+# Explore multivariate, graphically.
+# Total sales by product type over time.
+sales %>%
+  group_by(Date, type) %>%
+  summarize(amount = sum(total)) %>%
+ggplot(aes(x = Date, y = amount)) +
+  geom_line() +
+  geom_smooth() +
+  facet_wrap(~ type, scales = "free_y")
+
+sales %>%
+  group_by(month_of_year, type) %>%
+  summarize(amount = sum(total)) %>%
+ggplot(aes(x = month_of_year, y = amount)) +
+  geom_col() +
+  facet_wrap(~ type, scales = "free_y")
+
+# Sales by time of day.
+ggplot(sales, aes(x = order_hour, y = total)) +
+  geom_col()
+
+# Sales by time of day by product type
+sales %>%
+  group_by(order_hour, type) %>%
+  summarize(amount = sum(total)) %>%
+ggplot(aes(x = order_hour, y = amount)) +
+  geom_col() +
+  facet_wrap(~ type)
+```
+
+Total sales by product type throughout the year: Only laptop, phone, headphones, and monitor sales seem to vary through the year (both when viewed by day and year).
+
+Sales by product type throughout the day: Similar to by year, there are a few peaks and mostly driven by laptops, phones, headphones, and monitors. Peaks around noon and 6pm ish.
+
+## Story
+
+Statement: Technology product sales are associated with tax returns and holidays. \
+Audience: Amazon marketing team that want to better understand yearly sales cadences.
+
+-   Amazon technology product sales vary by month with peaks in April, October, and December.
+
+-   Peak months have a higher daily sales distribution than other months.
+
+-   On average, total sales are higher in December by x amount, which is statistically significant. This is likely tied to the end of year holidays.
+
+-   The April peak may be associated with tax returns.
+
+-   The October peak may be because (1) some event increased sales in October (Halloween?), (2) some event decreased November sales (Cyber Monday landed in December), (3) a combination of the two. \
+
+```{r}
+# Drop 2020 values.
+sales <- sales %>%
+  filter(year(Date) < 2020)
+
+# Graph technology product sales by month.
+sales %>%
+  group_by(month_of_year) %>%
+  summarize(total_sales = sum(total)) %>%
+ggplot(aes(x = month_of_year, y = total_sales, group = 1)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "Total Amazon Technology Product Sales in 2019",
+       subtitle = "Monthly variation with peaks in April, October, and December",
+       x = "2019",
+       y = "Sales (Millions)") +
+  geom_text(aes(x = month_of_year, 
+                y = total_sales, 
+                label = ifelse(total_sales > 3300000, 
+                               sprintf("$%.1fM", (total_sales / 1000000)), "")),
+            vjust = -.8,
+            hjust = .5,
+            size = 10/.pt) +
+  theme_classic() +
+  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale()),
+                     limits = c(0, 5000000))
+
+# Color peak months?
+# Add average monthly sales line?
+# Change text color sizes / font
+```
+
+Peak months have higher daily sales distribution than other months.
+
+```{r}
+# Graph daily sales distributions.
+sales %>%
+  group_by(Date) %>%
+  summarize(total_sales = sum(total)) %>%
+  mutate(test = ifelse(month(Date, label = TRUE) %in% c("Apr", "Oct", "Dec"), "Yes", "No")) %>%
+  ggplot(aes(y = total_sales, x = month(Date, label = TRUE), group = month(Date), fill = test)) +
+  geom_boxplot() +
+  scale_fill_manual(values=c("grey", "blue")) +
+labs(title = "Daily Sales Distribution by Month",
+     subtitle = "Peak months have higher daily sales distributions",
+       x = "2019",
+       y = "Daily Sales (Thousands)") +
+  theme_classic() +
+  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale()),
+                     limits = c(0, 170000)) +
+  theme(legend.position = "none") 
+
+# Color December to highlight
+```
+
+Holidays and sales days are in the middle of peak month distributions.
+
+```{r}
+# Holidays and sales days in peak months
+# Easter - 4/21
+# Halloween - 10/31
+# Cyber Monday - 12/2
+# Super Saturday 12/21
+# New Year's Eve - 12/31
+sales %>%
+  filter(Date %in% c(as.Date("2019-04-21"),
+                     as.Date("2019-10-31"),
+                     as.Date("2019-12-02"),
+                     as.Date("2019-12-21"),
+                     as.Date("2019-12-31"))) %>%
+  group_by(Date) %>%
+  summarize(sales_total = sum(total))
+
+sales %>%
+  filter(month(Date, label = TRUE) %in% c("Apr", "Oct", "Dec")) %>%
+  group_by(Date) %>%
+  summarize(total_sales = sum(total)) %>%
+  ggplot(aes(y = total_sales, x = month(Date, label = TRUE), group = month(Date))) +
+  geom_boxplot() +
+  geom_point(aes(x = 1, y = 120653.9), color = "blue", size = 2) +
+  geom_text(aes(x = 1, y = 120653.9, label = "Easter"), color = "blue", 
+            size = 10/.pt,
+            hjust = 1.1,
+            vjust = -0.9) +
+  geom_point(aes(x = 2, y = 130232.3), color = "blue", size = 2) +
+  geom_text(aes(x = 2, y = 130232.3, label = "Halloween"), color = "blue", 
+            size = 10/.pt,
+            hjust = 1.1,
+            vjust = -0.9) +
+  geom_point(aes(x = 3, y = 149025.7), color = "blue", size = 2) +
+  geom_text(aes(x = 3, y = 149025.7, label = "Cyber Monday"), color = "blue", 
+            size = 10/.pt,
+            hjust = 1.1,
+            vjust = -0.9) +
+  geom_point(aes(x = 3, y = 154756.9), color = "blue", size = 2) +
+  geom_text(aes(x = 3, y = 154756.9, label = "Super Saturday"), color = "blue", 
+            size = 10/.pt,
+            hjust = 1.1,
+            vjust = -0.9) +
+  geom_point(aes(x = 3, y = 131454.3), color = "blue", size = 2) +
+  geom_text(aes(x = 3, y = 131454.3, label = "New Year's Eve"), color = "blue", 
+            size = 10/.pt,
+            hjust = 1.1,
+            vjust = -0.9) +
+labs(title = "Important Days in Peak Month Distributions",
+     subtitle = "Holidays and sales days are not the top sales days for peak months",
+       x = "2019",
+       y = "Daily Sales (Thousands)") +
+  theme_classic() +
+  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale())) +
+  theme(legend.position = "none")
+
+# add y-axis break
+```
+
+The increased sales in December are likely due to end of year holidays. The April peak may be associated with tax returns.
+
+```{r}
+# Add tax return data for 2019
+tax_returns <- read_excel("./data/tax_returns.xlsx")
+
+tax_returns <- tax_returns %>%
+  mutate(cum_percent = cum_refunds / sum(refunds_issued))
+
+vtable(tax_returns, lush = TRUE)
+
+ggplot(tax_returns, aes(x = date, y = cum_percent)) +
+  geom_point() +
+  geom_line() +
+  scale_y_continuous(labels = percent)
+
+# Find estimates for 25%, 50%, and 75%, and 90% of tax returns released.
+15 + ceiling((25-21) / ((34-21) / (22-15)))
+# 25% by 2/18
+8 + ceiling((50-48) / ((53-48) / (15-8)))
+# 50% by 3/11
+# 75% by 4/12
+# 90% by 5/10
+
+sales %>%
+  filter(month(Date) <= 9) %>%
+  group_by(Date) %>%
+  summarize(total_sales = sum(total)) %>%
+ggplot(aes(x = Date, y = total_sales)) +
+  geom_line() +
+  geom_smooth() +
+  labs(title = "Daily Amazon Technology Product Sales From January to September",
+       subtitle = "Sales increase as tax refunds are issued and decrease after most are released",
+       x = "2019",
+       y = "Sales (Thousands)") +
+  theme_classic() +
+  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale()),
+                     limits = c(0, 140000)) +
+  scale_x_date(date_breaks = "months",
+               date_labels = "%b") +
+  geom_vline(aes(xintercept = as.Date("2019-02-18")), linetype = "dashed") +
+  annotate("text", x = as.Date("2019-02-16"), y = 20000, 
+           label = "25%", size = 10/.pt,
+           hjust = 1) +
+  geom_vline(aes(xintercept = as.Date("2019-03-11")), linetype = "dashed") +
+  annotate("text", x = as.Date("2019-03-09"), y = 20000, 
+           label = "50%", size = 10/.pt,
+           hjust = 1) +
+  geom_vline(aes(xintercept = as.Date("2019-04-12")), linetype = "dashed") +
+  annotate("text", x = as.Date("2019-04-10"), y = 20000, 
+           label = "75%", size = 10/.pt,
+           hjust = 1) +
+  geom_vline(aes(xintercept = as.Date("2019-05-10")), linetype = "dashed") +
+  annotate("text", x = as.Date("2019-05-08"), y = 20000, 
+           label = "90%", size = 10/.pt,
+           hjust = 1) +
+  annotate("text", x = as.Date("2019-01-16"), y = 25000, 
+           label = "Tax Refunds\nIssued", size = 12/.pt,
+           hjust = 0.5)
+```
+
+The October peak may be because (1) some event increased sales in October, (2) some event decreased November sales (3) or a combination of the two. From earlier graph, there are no high outlier sales days in October. Thanksgiving was later in 2019, on the 28th, so several potentially high sales days after Thanksgiving, such as Cyber Monday, were in December instead of November. The earliest Thanksgiving can be is on November 22nd, giving the month eight days after the holiday. If in 2019 dates were shifted so November included a full eight days after Thanksgiving, it would still have lower sales.
+
+```{r}
+# Graph October and theorized November distributions (shift back by 5 days)
+sales %>%
+  filter(month(Date, label = TRUE) %in% c("Oct", "Nov", "Dec")) %>%
+  group_by(Date) %>%
+  summarize(total_sales = sum(total)) %>%
+  mutate(pseudo_date = Date - days(5)) %>%
+  filter(month(pseudo_date, label = TRUE) %in% c("Oct", "Nov")) %>%
+  ggplot(aes(y = total_sales, x = month(pseudo_date, label = TRUE), group = month(pseudo_date))) +
+  geom_boxplot() +
+labs(title = "Daily Sales Distributions for Hypothetical October and November",
+     subtitle = "Sales are still less in November even with a full eight days after Thanksgiving",
+       x = "2019",
+       y = "Daily Sales (Thousands)") +
+  theme_classic() +
+  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale())) +
+  theme(legend.position = "none")
+
+sales %>%
+  filter(month(Date, label = TRUE) %in% c("Oct", "Nov", "Dec")) %>%
+  group_by(Date) %>%
+  summarize(total_sales = sum(total)) %>%
+  mutate(pseudo_date = Date - days(5)) %>%
+  filter(month(pseudo_date, label = TRUE) %in% c("Oct", "Nov")) %>%
+  group_by(mon = month(pseudo_date, label = TRUE)) %>%
+  summarize(total = sum(total_sales))
+```

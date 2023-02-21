@@ -1,0 +1,253 @@
+---
+title: "Peak Technology Product Sales Provide Marketing Insights and Puzzles"
+author: "Natasha Kacoroski"
+format: html
+editor: visual
+---
+
+## Introduction
+
+The purpose of this report is to provide Amazon technology product managers with insights about peak sales to improve marketing strategies. Analysis completed provides helpful information on how to direct marketing around peak sales and also raises questions on the likely underlying factors for higher sales. Information is derived from a sample of technology product data from 2019, including 19 products across 10 urban ZIP codes. Recommend that findings are validated against a larger sample before utilizing for marketing purposes.
+
+## Analysis
+
+Technology product sales for Amazon vary by month with peaks in April, October, and December.
+
+```{r}
+#| echo: false
+#| warning: false
+# Libraries
+library(tidyverse)
+library(ggplot2)
+library(vtable)
+library(lubridate)
+library(scales)
+library(readxl)
+library(knitr)
+
+# Data
+load("./data/sales_data.Rdata")
+
+tax_returns <- read_excel("./data/tax_returns.xlsx")
+
+# Prepare Data.
+
+# Convert Quantity and PriceEach to numeric.
+# Drop 2020 values.
+sales <- sales %>%
+  mutate(Quantity = as.numeric(Quantity),
+         PriceEach = as.numeric(PriceEach),
+         total = Quantity * PriceEach,
+         month_of_year = month(Date, label = TRUE)) %>%
+  filter(year(Date) < 2020)
+
+tax_returns <- tax_returns %>%
+  mutate(cum_percent = cum_refunds / sum(refunds_issued))
+
+# Graph technology product sales by month.
+sales %>%
+  group_by(month_of_year) %>%
+  summarize(total_sales = sum(total)) %>%
+ggplot(aes(x = month_of_year, y = total_sales, group = 1)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "Monthly Amazon Technology Product Sales in 2019",
+       subtitle = "Sales peak in April, October, and December",
+       x = "2019",
+       y = "Sales (Millions)") +
+  geom_text(aes(x = month_of_year, 
+                y = total_sales, 
+                label = ifelse(total_sales > 3300000, 
+                               sprintf("$%.1fM", (total_sales / 1000000)), "")),
+            vjust = -.8,
+            hjust = .5,
+            size = 10/.pt) +
+  theme_classic() +
+  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale()),
+                     limits = c(0, 5000000)) +
+  theme(plot.subtitle=element_text(color="grey50"))
+```
+
+Rather than high outlier sales days that drive up the total monthly sales, peak sales months have higher daily sales distributions.
+
+```{r}
+#| echo: false
+#| warning: false
+sales %>%
+  group_by(Date) %>%
+  summarize(total_sales = sum(total)) %>%
+  mutate(test = ifelse(month(Date, label = TRUE) %in% c("Apr", "Oct", "Dec"), "Yes", "No")) %>%
+  ggplot(aes(y = total_sales, x = month(Date, label = TRUE), group = month(Date), fill = test)) +
+  geom_boxplot() +
+  scale_fill_manual(values=c("grey", "#3366FF")) +
+labs(title = "Daily Sales Distribution by Month",
+     subtitle = "Peak months have higher daily sales distributions",
+       x = "2019",
+       y = "Daily Sales (Thousands)") +
+  theme_classic() +
+  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale()),
+                     limits = c(0, 170000)) +
+  theme(legend.position = "none",
+        plot.subtitle=element_text(color="grey50")) 
+```
+
+Focusing in on important days (holidays or big sales days) for peak months, they are actually not the highest sales day and most are not in the top 25% of sales days for the month (exception being Halloween for October).
+
+```{r}
+#| echo: false
+#| warning: false
+# Holidays and sales days in peak months
+# Easter - 4/21
+# Halloween - 10/31
+# Cyber Monday - 12/2
+# Super Saturday 12/21
+# New Year's Eve - 12/31
+sales_day_totals <- sales %>%
+  filter(Date %in% c(as.Date("2019-04-21"),
+                     as.Date("2019-10-31"),
+                     as.Date("2019-12-02"),
+                     as.Date("2019-12-21"),
+                     as.Date("2019-12-31"))) %>%
+  group_by(Date) %>%
+  summarize(sales_total = sum(total))
+
+sales %>%
+  filter(month(Date, label = TRUE) %in% c("Apr", "Oct", "Dec")) %>%
+  group_by(Date) %>%
+  summarize(total_sales = sum(total)) %>%
+  ggplot(aes(y = total_sales, x = month(Date, label = TRUE), group = month(Date))) +
+  geom_boxplot() +
+  geom_point(aes(x = 1, y = 120653.9), color = "#3366FF", size = 2) +
+  geom_text(aes(x = 1, y = 120653.9, label = "Easter"), color = "#3366FF", 
+            size = 10/.pt,
+            hjust = 1.1,
+            vjust = -0.9) +
+  geom_point(aes(x = 2, y = 130232.3), color = "#3366FF", size = 2) +
+  geom_text(aes(x = 2, y = 130232.3, label = "Halloween"), color = "#3366FF", 
+            size = 10/.pt,
+            hjust = 1.1,
+            vjust = -0.9) +
+  geom_point(aes(x = 3, y = 149025.7), color = "#3366FF", size = 2) +
+  geom_text(aes(x = 3, y = 149025.7, label = "Cyber Monday"), color = "#3366FF", 
+            size = 10/.pt,
+            hjust = 1.1,
+            vjust = -0.9) +
+  geom_point(aes(x = 3, y = 154756.9), color = "#3366FF", size = 2) +
+  geom_text(aes(x = 3, y = 154756.9, label = "Super Saturday"), color = "#3366FF", 
+            size = 10/.pt,
+            hjust = 1.1,
+            vjust = -0.9) +
+  geom_point(aes(x = 3, y = 131454.3), color = "#3366FF", size = 2) +
+  geom_text(aes(x = 3, y = 131454.3, label = "New Year's Eve"), color = "#3366FF", 
+            size = 10/.pt,
+            hjust = 1.1,
+            vjust = -0.9) +
+labs(title = "Important Days in Peak Month Distributions",
+     subtitle = "Holidays and sales days are not the top sales days for peak months",
+       x = "2019",
+       y = "Daily Sales (Thousands)") +
+  theme_classic() +
+  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale())) +
+  theme(legend.position = "none",
+        plot.subtitle=element_text(color="grey50"))
+```
+
+So what could be driving these higher monthly sales? For December, it is likely the end of year holidays, such as Christmas, Hanukkah, and Kwanzaa. And the April peak could be associated with tax refunds.
+
+```{r}
+#| echo: false
+#| warning: false
+# Find estimates for 25%, 50%, and 75%, and 90% of tax returns released.
+# 15 + ceiling((25-21) / ((34-21) / (22-15)))
+# 25% by 2/18
+# 8 + ceiling((50-48) / ((53-48) / (15-8)))
+# 50% by 3/11
+# 75% by 4/12
+# 90% by 5/10
+
+sales %>%
+  filter(month(Date) <= 9) %>%
+  group_by(Date) %>%
+  summarize(total_sales = sum(total)) %>%
+ggplot(aes(x = Date, y = total_sales)) +
+  geom_line() +
+  geom_smooth() +
+  labs(title = "Daily Amazon Technology Product Sales From January to September",
+       subtitle = "Sales increase as tax refunds are issued and decrease after most are released",
+       x = "2019",
+       y = "Sales (Thousands)") +
+  theme_classic() +
+  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale()),
+                     limits = c(0, 140000)) +
+  scale_x_date(date_breaks = "months",
+               date_labels = "%b") +
+  geom_vline(aes(xintercept = as.Date("2019-02-18")), linetype = "dashed") +
+  annotate("text", x = as.Date("2019-02-16"), y = 20000, 
+           label = "25%", size = 10/.pt,
+           hjust = 1) +
+  geom_vline(aes(xintercept = as.Date("2019-03-11")), linetype = "dashed") +
+  annotate("text", x = as.Date("2019-03-09"), y = 20000, 
+           label = "50%", size = 10/.pt,
+           hjust = 1) +
+  geom_vline(aes(xintercept = as.Date("2019-04-12")), linetype = "dashed") +
+  annotate("text", x = as.Date("2019-04-10"), y = 20000, 
+           label = "75%", size = 10/.pt,
+           hjust = 1) +
+  geom_vline(aes(xintercept = as.Date("2019-05-10")), linetype = "dashed") +
+  annotate("text", x = as.Date("2019-05-08"), y = 20000, 
+           label = "90%", size = 10/.pt,
+           hjust = 1) +
+  annotate("text", x = as.Date("2019-01-16"), y = 25000, 
+           label = "Tax Refunds\nIssued", size = 12/.pt,
+           hjust = 0.5) +
+  theme(plot.subtitle=element_text(color="grey50"))
+```
+
+The October peak may be because (1) some event increased sales in October, (2) some event decreased November sales (3) or a combination of the two. From the earlier visual, there are no high outlier sales days in October.
+
+Thanksgiving was later in 2019, on the 28th, so several potentially high sales days after Thanksgiving, such as Cyber Monday, were in December instead of November. The earliest Thanksgiving can ever be is on November 22nd, giving the month eight days after the holiday. As a hypothetical, investigated if November sales would be higher than October if in 2019 dates were shifted so November included a full eight days after Thanksgiving. This method was used as a proxy and recommend reviewing historical data over several years.
+
+```{r}
+#| echo: false
+hypothetical_total <- sales %>%
+  filter(month(Date, label = TRUE) %in% c("Oct", "Nov", "Dec")) %>%
+  group_by(Date) %>%
+  summarize(total_sales = sum(total)) %>%
+  mutate(pseudo_date = Date - days(5)) %>%
+  filter(month(pseudo_date, label = TRUE) %in% c("Oct", "Nov")) %>%
+  group_by(Month = month(pseudo_date, label = TRUE)) %>%
+  summarize("Total Sales" = sum(total_sales))
+```
+
+| Month    | Total Sales (Millions) |
+|----------|------------------------|
+| October  | \$3.7M                 |
+| November | \$3.4M                 |
+
+Based on a hypothetical date shift, October would still have higher sales than November. Taking a closer look at the distributions, even though November has gained some higher sales days, higher than October, by including more days after Thanksgiving it is not enough to overcome the higher sales days in October overall.
+
+```{r}
+#| echo: false
+#| warning: false
+# Graph October and theorized November distributions (shift back by 5 days)
+sales %>%
+filter(month(Date, label = TRUE) %in% c("Oct", "Nov", "Dec")) %>%
+  group_by(Date) %>%
+  summarize(total_sales = sum(total)) %>%
+  mutate(pseudo_date = Date - days(5)) %>%
+  filter(month(pseudo_date, label = TRUE) %in% c("Oct", "Nov")) %>%
+  ggplot(aes(y = total_sales, x = month(pseudo_date, label = TRUE), group = month(pseudo_date))) +
+  geom_boxplot() +
+labs(title = "Daily Sales Distributions for Hypothetical October and November",
+     subtitle = "Sales are still less in November even with a full eight days after Thanksgiving",
+       x = "2019",
+       y = "Daily Sales (Thousands)") +
+  theme_classic() +
+  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale())) +
+  theme(legend.position = "none",
+        plot.subtitle=element_text(color="grey50")) 
+```
+
+## Conclusion
+
+It is important to understand peak sale periods for developing a marketing strategy to increase sales. There are three sales peaks for Amazon technology products and the likely driver for the October peak is unknown. As expected, December has the highest sales peak and is likely due to end of year holidays. Recommendation here is to continue to support marketing that focuses on the holidays and encourages gift purchases. It seems like the peak in April is related to tax refunds being released. Consider promoting products with prices that are within average tax refund amounts. It is still unclear if the peak in October is due to an October-specific, November-specific, lead up to end of year holidays, or 2019-specific event or series of events. As such, encourage following through on earlier recommendation that these findings about peak sales are validated against a larger sample that includes more years, products, and locations.

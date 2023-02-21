@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Natasha Kacoroski">
+
+<title>Peak Technology Product Sales Provide Marketing Insights and Puzzles</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="dtc_final_files/libs/clipboard/clipboard.min.js"></script>
+<script src="dtc_final_files/libs/quarto-html/quarto.js"></script>
+<script src="dtc_final_files/libs/quarto-html/popper.min.js"></script>
+<script src="dtc_final_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="dtc_final_files/libs/quarto-html/anchor.min.js"></script>
+<link href="dtc_final_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="dtc_final_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="dtc_final_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="dtc_final_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="dtc_final_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Peak Technology Product Sales Provide Marketing Insights and Puzzles</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Natasha Kacoroski </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>The purpose of this report is to provide Amazon technology product managers with insights about peak sales to improve marketing strategies. Analysis completed provides helpful information on how to direct marketing around peak sales and also raises questions on the likely underlying factors for higher sales. Information is derived from a sample of technology product data from 2019, including 19 products across 10 urban ZIP codes. Recommend that findings are validated against a larger sample before utilizing for marketing purposes.</p>
+</section>
+<section id="analysis" class="level2">
+<h2 class="anchored" data-anchor-id="analysis">Analysis</h2>
+<p>Technology product sales for Amazon vary by month with peaks in April, October, and December.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="dtc_final_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Rather than high outlier sales days that drive up the total monthly sales, peak sales months have higher daily sales distributions.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="dtc_final_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Focusing in on important days (holidays or big sales days) for peak months, they are actually not the highest sales day and most are not in the top 25% of sales days for the month (exception being Halloween for October).</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="dtc_final_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>So what could be driving these higher monthly sales? For December, it is likely the end of year holidays, such as Christmas, Hanukkah, and Kwanzaa. And the April peak could be associated with tax refunds.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="dtc_final_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The October peak may be because (1) some event increased sales in October, (2) some event decreased November sales (3) or a combination of the two. From the earlier visual, there are no high outlier sales days in October.</p>
+<p>Thanksgiving was later in 2019, on the 28th, so several potentially high sales days after Thanksgiving, such as Cyber Monday, were in December instead of November. The earliest Thanksgiving can ever be is on November 22nd, giving the month eight days after the holiday. As a hypothetical, investigated if November sales would be higher than October if in 2019 dates were shifted so November included a full eight days after Thanksgiving. This method was used as a proxy and recommend reviewing historical data over several years.</p>
+<div class="cell">
+
+</div>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Month</th>
+<th>Total Sales (Millions)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>October</td>
+<td>$3.7M</td>
+</tr>
+<tr class="even">
+<td>November</td>
+<td>$3.4M</td>
+</tr>
+</tbody>
+</table>
+<p>Based on a hypothetical date shift, October would still have higher sales than November. Taking a closer look at the distributions, even though November has gained some higher sales days, higher than October, by including more days after Thanksgiving it is not enough to overcome the higher sales days in October overall.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="dtc_final_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>It is important to understand peak sale periods for developing a marketing strategy to increase sales. There are three sales peaks for Amazon technology products and the likely driver for the October peak is unknown. As expected, December has the highest sales peak and is likely due to end of year holidays. Recommendation here is to continue to support marketing that focuses on the holidays and encourages gift purchases. It seems like the peak in April is related to tax refunds being released. Consider promoting products with prices that are within average tax refund amounts. It is still unclear if the peak in October is due to an October-specific, November-specific, lead up to end of year holidays, or 2019-specific event or series of events. As such, encourage following through on earlier recommendation that these findings about peak sales are validated against a larger sample that includes more years, products, and locations.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
