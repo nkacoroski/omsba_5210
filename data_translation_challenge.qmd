@@ -382,7 +382,7 @@ Sales by product type throughout the day: Similar to by year, there are a few pe
 
 ## Story
 
-Statement: Technology product sales are associated with tax returns and holidays. \
+Statement: Technology product sales are associated with tax returns and holidays.\
 Audience: Amazon marketing team that want to better understand yearly sales cadences.
 
 -   Amazon technology product sales vary by month with peaks in April, October, and December.
@@ -393,7 +393,7 @@ Audience: Amazon marketing team that want to better understand yearly sales cade
 
 -   The April peak may be associated with tax returns.
 
--   The October peak may be because (1) some event increased sales in October (Halloween?), (2) some event decreased November sales (Cyber Monday landed in December), (3) a combination of the two. \
+-   The October peak may be because (1) some event increased sales in October (Halloween?), (2) some event decreased November sales (Cyber Monday landed in December), (3) a combination of the two.\
 
 ```{r}
 # Drop 2020 values.
