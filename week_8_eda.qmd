@@ -1,0 +1,278 @@
+---
+title: "Week 8 Exploratory Data Analysis"
+format: html
+editor: visual
+---
+
+## Assignment
+
+Explore the data and think of a story, then make two graphs in a Shiny dashboard. One of them should be interactive using ggiraph or one of the htmlwidgets. The other can also be interactive or can be a regular ggplot2 graph, but should react to the user changing the inputs using at least one Shiny input.
+
+## Data Preparation
+
+```{r}
+# Import libraries.
+library(tidyverse)
+library(ggplot2)
+library(vtable)
+library(ggiraph)
+library(gghighlight)
+
+# Import data.
+age_gaps <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-14/age_gaps.csv')
+```
+
+## Exploratory Data Analysis
+
+```{r}
+vtable::vtable(age_gaps, lush = TRUE)
+
+vtable::sumtable(age_gaps)
+
+age_gaps %>%
+  ggplot(aes(x = release_year)) +
+  geom_histogram()
+
+age_gaps %>%
+  ggplot(aes(x = age_difference)) +
+  geom_histogram()
+
+age_gaps %>%
+  ggplot(aes(x = couple_number)) +
+  geom_bar()
+
+# What movies have the highest age gap?
+age_gaps %>%
+  filter(age_difference > 15) %>%
+  arrange(desc(age_difference))
+
+# Is there a relationship between year and age gap?
+age_gaps %>%
+  group_by(release_year) %>%
+  summarize(median_age_gap = median(age_difference)) %>%
+  ggplot(aes(x = release_year, y = median_age_gap)) +
+  geom_point() +
+  geom_line()
+
+age_gaps %>%
+  ggplot(aes(x = release_year, y = age_difference)) +
+  geom_point()
+
+# Are certain directors known for using actors with high age gaps?
+age_gaps %>%
+  group_by(director) %>%
+  summarize(median_age_gap = median(age_difference), movies = n()) %>%
+  arrange(desc(median_age_gap))
+
+# With high age gaps, is it usually a male or female character that is older or younger?
+age_gaps %>%
+  mutate(older_character_gender = 
+           case_when(actor_1_age > actor_2_age ~ character_1_gender,
+                     actor_1_age == actor_2_age ~ "neither",
+                     actor_1_age < actor_2_age ~ character_2_gender,
+                     TRUE ~ "Error")) %>%
+  select(movie_name, older_character_gender, age_difference) %>%
+  arrange(desc(age_difference))
+
+# Are large age gaps more common in movies with more couples?
+age_gaps %>%
+  ggplot(aes(x = couple_number, y = age_difference)) +
+  geom_point()
+
+# Do certain actors play roles with high age gaps? Or does the actor just play a lot of roles?
+age_gaps %>%
+  group_by(actor_1_name) %>%
+  summarize(median_age_gap = median(age_difference), movies = n()) %>%
+  arrange(desc(median_age_gap)) %>%
+  ggplot(aes(x = movies, y = median_age_gap)) +
+  geom_point()
+
+age_gaps %>%
+  group_by(actor_2_name) %>%
+  summarize(median_age_gap = median(age_difference), movies = n()) %>%
+  arrange(desc(median_age_gap)) %>%
+  ggplot(aes(x = movies, y = median_age_gap)) +
+  geom_point()
+
+# Does age gap vary by age (i.e. are there greater gaps if the actors are both younger vs. older?)
+age_gaps %>%
+  mutate(avg_age = (actor_1_age + actor_2_age) / 2) %>%
+  ggplot(aes(x = avg_age, y = age_difference)) +
+  geom_point()
+
+# Age gap by decade - has it gotten better or worse?
+age_gaps %>%
+  mutate(decade = case_when(release_year < 1940 ~ "1930s",
+                            release_year < 1950 ~ "1940s",
+                            release_year < 1960 ~ "1950s",
+                            release_year < 1970 ~ "1960s",
+                            release_year < 1980 ~ "1970s",
+                            release_year < 1990 ~ "1980s",
+                            release_year < 2000 ~ "1990s",
+                            release_year < 2010 ~ "2000s",
+                            release_year < 2020 ~ "2010s",
+                            TRUE ~ "2020s")) %>%
+  group_by(decade) %>%
+  summarize(avg_gap = mean(age_difference)) %>%
+  ggplot(aes(x = decade, y = avg_gap, group = 1)) +
+  geom_point() +
+  geom_line()
+
+age_gaps %>%
+  mutate(decade = case_when(release_year < 1940 ~ "1930s",
+                            release_year < 1950 ~ "1940s",
+                            release_year < 1960 ~ "1950s",
+                            release_year < 1970 ~ "1960s",
+                            release_year < 1980 ~ "1970s",
+                            release_year < 1990 ~ "1980s",
+                            release_year < 2000 ~ "1990s",
+                            release_year < 2010 ~ "2000s",
+                            release_year < 2020 ~ "2010s",
+                            TRUE ~ "2020s")) %>%
+  ggplot(aes(x = decade, y = age_difference)) +
+  geom_boxplot() +
+  geom_jitter()
+
+# Is there a difference in hetero and homo sexual relationships?
+age_gaps %>%
+  mutate(relationship_type = ifelse(character_1_gender != character_2_gender,
+                                    "hetero", "homo")) %>%
+  group_by(relationship_type) %>%
+  summarize(count = n(), median_age_gap = median(age_difference),
+            avg_age_gap = mean(age_difference))
+
+# How many female roles vs. male roles and what is the acting pool for each?
+age_gaps %>%
+  mutate(role_id = paste(movie_name, " - ", release_year, " - ", as.character(couple_number))) %>%
+  select(role_id, character_1_gender, character_2_gender, actor_1_name, actor_2_name) %>%
+  pivot_longer(character_1_gender:character_2_gender, names_to = "character", values_to = "gender") %>%
+  mutate(actor = ifelse(grepl("1", character) == TRUE, actor_1_name, actor_2_name)) %>%
+  select(role_id, character, gender, actor) %>%
+  group_by(gender) %>%
+  summarize(n(), n_distinct(actor))
+
+
+age_gaps %>%
+  mutate(older_character_gender = 
+           case_when(actor_1_age > actor_2_age ~ ifelse(character_1_gender == "woman", "Female", "Male"),
+                     actor_1_age == actor_2_age ~ "Same Age Actors",
+                     actor_1_age < actor_2_age ~ ifelse(character_2_gender == "woman", "Female", "Male"),
+                     TRUE ~ "Error")) %>%
+  mutate(avg_age = (actor_1_age + actor_2_age) / 2) %>%
+  ggplot(aes(x = avg_age, y = age_difference, color = older_character_gender)) +
+  geom_point() +
+  geom_smooth()
+
+age_gaps %>%
+  mutate(older_character_gender = 
+           case_when(actor_1_age > actor_2_age ~ character_1_gender,
+                     actor_1_age == actor_2_age ~ "neither",
+                     actor_1_age < actor_2_age ~ character_2_gender,
+                     TRUE ~ "Error")) %>%
+  ggplot(aes(x = release_year, y = age_difference, color = older_character_gender)) +
+  geom_point() +
+  geom_smooth()
+```
+
+-   830 movies between 1935 and 2022. Age difference between actors ranges from 0 to 52. Most movies have 1 couple, but up to 7 couples in a movie. 567 actors for actor 1, 647 actors for actor 2 - an actor may be in both columns. Character genders provided as man or women. Actor birth dates and ages provided for each film. 510 unique directors.
+
+-   Release Year: skewed left, a lot more movies made since 1990s, 25th percentile is 1997.
+
+-   Age Difference: skewed right, average age difference is 10 years +/- 8.5 years. Most are between 1 and 15 years.
+
+-   Number of Couples: Most movies have 1 couple, 75th percentile is 2 couples, skewed right
+
+-   Character Genders and Ages: most character 1s are male and character 2s are female. On average, actor 1s are older (40 yrs) and actor 2s are younger (30 yrs).
+
+-   What movies have the highest age gap?\
+    I don't know enough about movies besides Harold and Maude to be expected.
+
+-   Is there a relationship between year and age gap?\
+    Not median age gap by year. Looking at raw age differences, there are just more movies since the 1990s.
+
+-   Are certain directors known for using actors with high age gaps?\
+    Most directors only have a single film listed or few films listed so a single movie with a high age gap will push up the director.. There are some that stand out: Roger Michell, 3 films, age gap median of 33. Howard Hawks, 4 films, age gap median of 24.5. John Huston, 6 films, age gap median of 21.5. John Glenn, 15 films, age gap median of 21.
+
+-   With high age gaps, is it usually a male or female character that is older or younger?\
+    Usually a male character is older.
+
+-   Are large age gaps more common in movies with more couples?\
+    Age gaps decrease (but also number of movies decrease) as the number of couples in a movie increases.
+
+-   Do certain actors play roles with high age gaps? Or does the actor just play a lot of roles?\
+    Yes, some actors tend to play roles with high age gaps, however actors in more movies do not seem to always have roles with high age gaps.
+
+-   Does age gap vary by age (i.e. are there greater gaps if the actors are both younger vs. older?)\
+    In general, there is less of an age gap if the average actor age is lower.
+
+-   Is there a difference in hetero and homo sexual relationships?\
+    Not really. Homosexual relationships have a slightly lower age gap on average. There are only 23 couples total.
+
+-   How many female roles vs. male roles and what is the acting pool for each?\
+    Male and female roles are about equal. There are 65 more actors in female roles than male roles. 12% more.
+
+## Story
+
+Female characters are played by younger actors and male characters are played by older actors, resulting in an age gap between romantic couples in movies, however, this age gap is smaller for acting couples with a younger average age.
+
+```{r}
+# Vizualization 1 - Age Distribution for Female Characters vs. Male Characters
+# Boxplot with points
+# Tooltip - actor, age, movie, couple character number
+# Change time span, select actor, select movie
+gg_box <- age_gaps %>%
+  mutate(role_id = paste(movie_name, " - ", release_year, " - ", as.character(couple_number))) %>%
+  pivot_longer(character_1_gender:character_2_gender, names_to = "character", values_to = "gender") %>%
+  mutate(actor = ifelse(grepl("1", character) == TRUE, actor_1_name, actor_2_name),
+         age = ifelse(grepl("1", character) == TRUE, actor_1_age, actor_2_age),
+         character_gender = ifelse(gender == "woman", "Female", "Male"),
+         tooltip = paste0("Actor: ", actor,
+                          "\nAge: ", age,
+                          "\nMovie: ", movie_name,
+                          "\nYear: ", release_year)) %>%
+  ggplot(aes(x = character_gender, y = age, group = actor)) +
+  geom_boxplot() +
+  geom_jitter_interactive(aes(tooltip = tooltip),
+                          color = ifelse(actor == "Ruth Gordon", "yellow", "gray"), alpha = 0.3) +
+  theme_minimal() +
+  labs(title = "Female Characters Are Played by Younger Actors Than Male Characters",
+       x = "Character Gender",
+       y = "Actor Age")
+
+
+girafe(ggobj = gg_box)
+
+# Vizualization 2 - Younger Actor Age by Older Actor Age of Movie
+# Scatter Plot, size = age gap, color = older actor character gender
+# Tooltip - movie, actors, ages, couple number, release year
+# change release year, select actor, select movie
+gg_pt <- age_gaps %>%
+  mutate(older_character_gender = 
+           case_when(actor_1_age > actor_2_age ~ ifelse(character_1_gender == "woman", "Female", "Male"),
+                     actor_1_age == actor_2_age ~ "N/A (Same Age)",
+                     actor_1_age < actor_2_age ~ ifelse(character_2_gender == "woman", "Female", "Male"),
+                     TRUE ~ "Error"),
+         tooltip = paste0("Movie: ", movie_name,
+                          "\nYear: ", release_year,
+                          "\nAge Gap: ", age_difference,
+                          "\nOlder Actor: ", actor_1_name, " (", actor_1_age, ")",
+                          "\nYounger Actor: ", actor_2_name, " (", actor_2_age, ")")) %>%
+  ggplot(aes(x = actor_1_age, y = actor_2_age, color = older_character_gender)) +
+  geom_point_interactive(aes(size = age_difference, tooltip = tooltip), position = "jitter", 
+             alpha = 0.5) +
+  scale_size(range = c(1, 5)) +
+  labs(y = "Younger Actor Age",
+       x = "Older Actor Age",
+       size = "Age Difference",
+       color = "Older Character Gender") +
+  theme_minimal() +
+  scale_color_manual(values = c("red", "blue", "black")) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed")
+
+girafe(ggobj = gg_pt)
+
+as.list(sort(age_gaps$movie_name))
+
+as.list(sort(unique(c(age_gaps$actor_1_name, age_gaps$actor_2_name))))
+
+```

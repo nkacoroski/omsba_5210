@@ -1,0 +1,65 @@
+---
+title: "Data Exploration Project Proposal"
+format: html
+editor: visual
+---
+
+## Assignment - Data Exploration Project
+
+\(1\) Find a data set to explore, (2) develop a story, and (3) create a standalone dashboard, memo, and presentation to communicate that story.
+
+## Due Dates
+
+-   February 26th: Data Set and Description\
+    Submit a description of the data (1 paragraph), how it will be used (1 paragraph), and link to data set.
+
+-   March 5th: Outline and First Visualization\
+    Submit outline of data exploration project, including (1) story, (2) descriptions / sketches of visualizations, (3) presentation details, (4) thoughts about how graphs will help get story across
+
+-   March 17th: Presentation, Memo, and Dashboard\
+    Submit (1) knitted document as memo, (2) dashboard link, (3) presentation recording
+
+-   March 17th: Peer Review
+
+## Data Proposal
+
+Use Washington Department of Fish and Wildlife (WDFW) Data from 2000-2015 on item statistics by month to better understand revenue from item sales.\
+Audience: WDFW budget and planning management
+
+-   What items are most popular?
+
+-   What items generate the most revenue?
+
+-   What items are associated with a weapon? How many item sales and revenue and associated with a weapon?
+
+-   When are different types of items bought throughout the year? Has there been a difference in the number or type of items bought in the last few years? How about a change in revenue?
+
+-   What regions (ZIP codes / counties) usually purchase items and what types of items? Are they in state or out of state?
+
+```{r}
+# Import libraries
+library(tidyverse)
+library(vtable)
+library(ggplot2)
+
+# Import data.
+wdfw_items <- read_csv("./data/WDFW_Item_Statistics_By_Month.csv")
+
+# Explore data.
+vtable::vtable(wdfw_items, lush = TRUE)
+```
+
+Need to prepare data. Missing values in Item Number, Item Description, Weapon Type, Calendar Month, Calendar Year, Zip Code, and County. Item Number includes 999 value, which could be error. Need to also understand all Item Descriptions. Discount Type makes sense. I think missing Weapon Types could be no weapon included. License Year is 2000 to 2015 with most in 2010. Calendar Year and Month is at time of purchase. ZIP Code and County is where customer resides. Net Sales is the net number of items sold (why net? Can people return? Or is this because of discounts?), and Net Revenue is the sum of transaction and state fee for items sold.
+
+## Data Selection
+
+The dataset that we selected for the Data Exploration Project is the State Government Tax Collections from the U.S. Census. annual survey. This dataset consists of 3,866 rows and 36 columns. It includes information on different types of tax revenue by country and state since the first survey in 1951, however data goes back to 1902. The latest information is from 2021. There is an accompanying spreadsheet detailing the tax codes and descriptions. Tax items included are: property; general sales and gross receipts; alcoholic sales; amusement sales; insurance premiums sales; motor fuels sales; pari-mutels sales; public utilities sales; tobacco products sales; other selective sales and gross receipts; alcoholic beverages license;
+
+```{r}
+# Import data.
+state_taxes <- readxl::read_xls("./data/state_tax_data.xls")
+tax_info <- readxl::read_xls("./data/taxitemcodesanddescriptions.xls")
+
+# Explore.
+vtable::vtable(state_taxes, lush = TRUE)
+```

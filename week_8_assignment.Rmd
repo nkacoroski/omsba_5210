@@ -1,0 +1,134 @@
+---
+title: "Hollywood Age Gap"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r global, include=FALSE}
+# Import libraries.
+library(flexdashboard)
+library(tidyverse)
+library(shinyWidgets)
+library(ggiraph)
+
+# Import data.
+age_gaps <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-14/age_gaps.csv')
+
+# Prepare data. 
+movie_roles <- age_gaps %>%
+  mutate(role_id = paste(movie_name, " - ", release_year, " - ", as.character(couple_number))) %>%
+  pivot_longer(character_1_gender:character_2_gender, names_to = "character", values_to = "gender") %>%
+  mutate(actor = ifelse(grepl("1", character) == TRUE, actor_1_name, actor_2_name),
+         age = ifelse(grepl("1", character) == TRUE, actor_1_age, actor_2_age),
+         character_gender = ifelse(gender == "woman", "Female", "Male")) %>%
+  mutate(tooltip = paste0("Actor: ", actor,
+                          "\nAge: ", age,
+                          "\nMovie: ", movie_name,
+                          "\nYear: ", release_year))
+
+movie_gaps <- age_gaps %>%
+  mutate(older_character_gender = 
+           case_when(actor_1_age > actor_2_age ~ ifelse(character_1_gender == "woman", "Female", "Male"),
+                     actor_1_age == actor_2_age ~ "N/A (Same Age)",
+                     actor_1_age < actor_2_age ~ ifelse(character_2_gender == "woman", "Female", "Male"),
+                     TRUE ~ "Error"),
+         tooltip = paste0("Movie: ", movie_name,
+                          "\nYear: ", release_year,
+                          "\nAge Gap: ", age_difference,
+                          "\nOlder Actor: ", actor_1_name, " (", actor_1_age, ")",
+                          "\nYounger Actor: ", actor_2_name, " (", actor_2_age, ")"))
+```
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+### Parameters
+
+```{r}
+numericRangeInput(
+  "year",
+  "Year",
+  value = c(1935, 2022),
+  width = NULL,
+  separator = " to ",
+  min = 1935,
+  max = 2022,
+  step = 1
+)
+
+numericRangeInput(
+  "age_gap",
+  "Age Gap",
+  value = c(0, 52),
+  width = NULL,
+  separator = " to ",
+  min = 0,
+  max = 52,
+  step = 1
+)
+
+selectInput(
+  "movie",
+  "Movie(s)",
+  choices = as.list(sort(age_gaps$movie_name)),
+  multiple = TRUE
+)
+
+selectInput(
+  "actor",
+  "Actor(s)",
+  choices = as.list(sort(unique(c(age_gaps$actor_1_name, age_gaps$actor_2_name)))),
+  multiple = TRUE
+)
+
+```
+
+Column
+-----------------------------------------------------------------------
+
+### Female Characters Are Usually Played by Younger Actors Than Male Characters
+
+```{r}
+renderggiraph({
+  gg_box <- movie_roles %>%
+    filter(release_year >= input$year[1] & release_year <= input$year[2],
+           age_difference >= input$age_gap[1] & age_difference <= input$age_gap[2]) %>%
+ggplot(aes_string(x = 'character_gender', y = 'age')) +
+  geom_boxplot() +
+  geom_jitter_interactive(aes(tooltip = tooltip),
+              color = "gray", alpha = 0.3) +
+  theme_minimal() +
+  labs(x = "Character Gender",
+       y = "Actor Age")
+  
+  girafe(ggobj = gg_box)
+})
+
+```
+
+### Romantic Movie Couples Usually Consist of a Younger Actor Playing the Female Character and an Older Actor Playing the Male Character
+
+```{r}
+renderggiraph({
+  gg_pt <- movie_gaps %>%
+    filter(release_year >= input$year[1] & release_year <= input$year[2],
+           age_difference >= input$age_gap[1] & age_difference <= input$age_gap[2]) %>%
+ggplot(aes(x = actor_1_age, y = actor_2_age, color = older_character_gender)) +
+  geom_point_interactive(aes(size = age_difference, tooltip = tooltip), position = "jitter", 
+             alpha = 0.5) +
+  scale_size(range = c(1, 5)) +
+  labs(y = "Younger Actor Age",
+       x = "Older Actor Age",
+       size = "Age Difference",
+       color = "Older Character Gender") +
+  theme_minimal() +
+  scale_color_manual(values = c("red", "blue", "black")) +
+    geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray")
+  
+  girafe(ggobj = gg_pt)
+})
+
+```
