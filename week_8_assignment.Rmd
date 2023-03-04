@@ -72,16 +72,16 @@ numericRangeInput(
 
 selectInput(
   "movie",
-  "Movie(s)",
-  choices = as.list(sort(age_gaps$movie_name)),
-  multiple = TRUE
+  "Movie",
+  choices = as.list(c("All", sort(age_gaps$movie_name))),
+  selected = "All"
 )
 
 selectInput(
   "actor",
-  "Actor(s)",
-  choices = as.list(sort(unique(c(age_gaps$actor_1_name, age_gaps$actor_2_name)))),
-  multiple = TRUE
+  "Actor",
+  choices = as.list(c("All", sort(unique(c(age_gaps$actor_1_name, age_gaps$actor_2_name))))),
+  selected = "All"
 )
 
 ```
@@ -93,16 +93,28 @@ Column
 
 ```{r}
 renderggiraph({
+  
   gg_box <- movie_roles %>%
     filter(release_year >= input$year[1] & release_year <= input$year[2],
            age_difference >= input$age_gap[1] & age_difference <= input$age_gap[2]) %>%
 ggplot(aes_string(x = 'character_gender', y = 'age')) +
   geom_boxplot() +
-  geom_jitter_interactive(aes(tooltip = tooltip),
-              color = "gray", alpha = 0.3) +
-  theme_minimal() +
-  labs(x = "Character Gender",
-       y = "Actor Age")
+  geom_jitter_interactive(
+    aes(tooltip = tooltip,
+        color = ifelse((grepl(paste0("Movie: ", input$movie, "\nYear:"), tooltip) == TRUE | 
+                         grepl(paste0("Actor: ", input$actor, "\nAge:"), tooltip) == TRUE), "black", "gray"),
+        alpha = ifelse((grepl(paste0("Movie: ", input$movie, "\nYear:"), tooltip) == TRUE |
+                         grepl(paste0("Actor: ", input$actor, "\nAge:"), tooltip) == TRUE), 1, 0.3),
+        fill = ifelse((grepl(paste0("Movie: ", input$movie, "\nYear:"), tooltip) == TRUE |
+                        grepl(paste0("Actor: ", input$actor, "\nAge:"), tooltip) == TRUE), "yellow", "gray")),
+    shape = 21,
+    size = 2) +
+    scale_color_identity() +
+    scale_fill_identity() +
+    theme_minimal() +
+    labs(x = "Character Gender",
+       y = "Actor Age") +
+    theme(legend.position = "none")
   
   girafe(ggobj = gg_box)
 })
@@ -117,8 +129,11 @@ renderggiraph({
     filter(release_year >= input$year[1] & release_year <= input$year[2],
            age_difference >= input$age_gap[1] & age_difference <= input$age_gap[2]) %>%
 ggplot(aes(x = actor_1_age, y = actor_2_age, color = older_character_gender)) +
-  geom_point_interactive(aes(size = age_difference, tooltip = tooltip), position = "jitter", 
-             alpha = 0.5) +
+  geom_point_interactive(aes(size = age_difference,
+                             tooltip = tooltip,
+                              alpha = ifelse((grepl(paste0("Movie: ", input$movie, "\nYear:"), tooltip) == TRUE |
+                         grepl(paste0("Actor: ", input$actor, " "), tooltip) == TRUE), 1, 0.3)),
+                         position = "jitter") +
   scale_size(range = c(1, 5)) +
   labs(y = "Younger Actor Age",
        x = "Older Actor Age",
@@ -126,7 +141,8 @@ ggplot(aes(x = actor_1_age, y = actor_2_age, color = older_character_gender)) +
        color = "Older Character Gender") +
   theme_minimal() +
   scale_color_manual(values = c("red", "blue", "black")) +
-    geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray")
+    geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray") +
+    guides(fill = FALSE, alpha = FALSE)
   
   girafe(ggobj = gg_pt)
 })

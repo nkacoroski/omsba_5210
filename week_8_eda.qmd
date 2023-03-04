@@ -230,14 +230,22 @@ gg_box <- age_gaps %>%
                           "\nAge: ", age,
                           "\nMovie: ", movie_name,
                           "\nYear: ", release_year)) %>%
-  ggplot(aes(x = character_gender, y = age, group = actor)) +
+  ggplot(aes(x = character_gender, y = age)) +
   geom_boxplot() +
-  geom_jitter_interactive(aes(tooltip = tooltip),
-                          color = ifelse(actor == "Ruth Gordon", "yellow", "gray"), alpha = 0.3) +
+  geom_jitter_interactive(
+    aes(tooltip = tooltip,
+        color = ifelse(grepl("Harold", tooltip) == TRUE, "black", "gray"),
+        alpha = ifelse(grepl("Harold", tooltip) == TRUE, 1, 0.3),
+        fill = ifelse(grepl("Harold", tooltip) == TRUE, "yellow", "gray")),
+    shape = 21,
+    size = 2) +
+  scale_color_identity() +
+  scale_fill_identity() +
   theme_minimal() +
   labs(title = "Female Characters Are Played by Younger Actors Than Male Characters",
        x = "Character Gender",
-       y = "Actor Age")
+       y = "Actor Age") +
+  theme(legend.position = "none")
 
 
 girafe(ggobj = gg_box)
@@ -270,9 +278,4 @@ gg_pt <- age_gaps %>%
   geom_abline(intercept = 0, slope = 1, linetype = "dashed")
 
 girafe(ggobj = gg_pt)
-
-as.list(sort(age_gaps$movie_name))
-
-as.list(sort(unique(c(age_gaps$actor_1_name, age_gaps$actor_2_name))))
-
 ```
