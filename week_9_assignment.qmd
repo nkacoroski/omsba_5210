@@ -1,0 +1,178 @@
+---
+title: "Week 9 Assignment"
+format: html
+editor: visual
+---
+
+## Prompt
+
+1.  Explore Tidy Tuesday data.
+2.  Come up with a story.
+3.  Create 2+ visualizations with Tableau to support story.
+
+## Data Preparation
+
+```{r}
+# Load libraries.
+library(tidyverse)
+library(ggplot2)
+library(vtable)
+library(readr)
+
+
+# Import data.
+afrisenti <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-28/afrisenti.csv')
+languages <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-28/languages.csv')
+language_scripts <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-28/language_scripts.csv')
+language_countries <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-28/language_countries.csv')
+country_regions <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-28/country_regions.csv')
+```
+
+Initial data exploration.
+
+```{r}
+vtable::vtable(afrisenti, lush = TRUE)
+vtable::vtable(country_regions, lush = TRUE)
+vtable::vtable(language_countries, lush = TRUE)
+vtable::vtable(language_scripts, lush = TRUE)
+vtable::vtable(languages, lush = TRUE)
+
+
+dups <- afrisenti %>%
+  group_by(tweet) %>%
+  filter(n() > 1) %>%
+  ungroup()
+```
+
+Data is from an African language sentiment analysis dataset. The dataset includes 111,720 tweets with sentiment of positive, negative, or neutral. There are 14 different languages across four different language families. There are 13 different countries, 6 different regions, and 3 different scripts. There may be multiple countries or scripts per language. There are also multiple regions per country, which does not make sense (example Mozambique). No missing values, however, there are duplicates. There is the same tweet for different languages, or the same tweet for the same language with different sentiment labels. Based on this information, I think it sense to explore different splits of sentiment by language, country, region, script. For this analysis, it makes sense to remove all duplicate rows. For the first type of duplicate where different languages are assigned the same tweet, it's not clear if this is a legitimate scenario from the documentation. For the second type of duplicate it's unclear what the correct sentiment is for the tweet
+
+```{r}
+# Correct country regions using https://www.nationsonline.org/oneworld/africa.htm
+# Cameroon is in Middle Africa
+# Mozambique is in Eastern Africa
+# Zimbabwe is in Eastern Africa
+# Update to include "ern" if needed
+country_regions <- country_regions %>%
+  distinct(country, .keep_all = TRUE) %>%
+  mutate(region = case_when(country == "Cameroon" ~ "Middle Africa",
+                            country == "Mozambique" ~ "Eastern Africa",
+                            country == "Zimbabwe" ~ "Eastern Africa",
+                            TRUE ~ region)) %>%
+  mutate(region = case_when(grepl("South", region) == TRUE ~ "Southern Africa",
+                            grepl("North", region) == TRUE ~ "Northern Africa",
+                            grepl("East", region) == TRUE ~ "Eastern Africa",
+                            grepl("West", region) == TRUE ~ "Western Africa",
+                            TRUE ~ region))
+  
+# Merge country region with country and language iso code. Group by language code and remove duplicate regions.
+language_locations <- language_countries %>%
+  full_join(country_regions, by = "country") %>%
+  group_by(language_iso_code) %>%
+  summarize(countries = toString(country), regions = toString(region)) %>%
+  mutate(regions = case_when(
+    language_iso_code == "hau" ~ "Middle Africa, Western Africa",
+    language_iso_code == "pcm" ~ "Middle Africa, Western Africa",
+    language_iso_code == "swa" ~ "Eastern Africa",
+    language_iso_code == "tso" ~ "Eastern Africa, Southern Africa",
+                             TRUE ~ regions))
+
+# Group country by language code.
+language_countries <- language_countries %>%
+  group_by(language_iso_code) %>%
+  summarize(countries = toString(country))
+
+# Group script by language code.
+language_scripts <- language_scripts %>%
+  group_by(language_iso_code) %>%
+  summarize(scripts = toString(script))
+
+# Remove duplicates and combine all data.
+data <- afrisenti %>%
+  select(- intended_use) %>%
+  group_by(tweet) %>%
+  filter(n() == 1) %>%
+  ungroup() %>%
+  full_join(languages, by = "language_iso_code") %>%
+  full_join(language_scripts, by = "language_iso_code") %>%
+  full_join(language_locations, by = "language_iso_code")
+  
+# Check data table.  
+vtable::vtable(data, lush = TRUE)
+
+
+```
+
+Prepared dataset consists of 104,322 tweets over 14 different languages. There are four unique script combinations, 10 country combinations, and 5 region combinations by language.
+
+```{r}
+# How many tweets per label?
+data %>%
+  group_by(label) %>%
+  summarize(count = n(), percent = n() / 104322)
+
+# How many tweets per language?
+data %>%
+  group_by(language) %>%
+  summarize(count = n(), percent = n() / 104322) %>%
+  arrange(desc(count))
+
+# How many tweets per language scripts?
+data %>%
+  group_by(scripts) %>%
+  summarize(count = n(), percent = n() / 104322) %>%
+  arrange(desc(count))
+
+# How many tweets per language country combination?
+data %>%
+  group_by(countries) %>%
+  summarize(count = n(), percent = n() / 104322) %>%
+  arrange(desc(count))
+
+# How many tweets per language region?
+data %>%
+  group_by(regions) %>%
+  summarize(count = n(), percent = n() / 104322) %>%
+  arrange(desc(count))
+
+# How many tweets by label per language?
+data %>%
+  group_by(language, label) %>%
+  summarize(count = n()) %>%
+  arrange(count)
+
+data %>%
+  group_by(language) %>%
+  mutate(language_total = n()) %>%
+  group_by(language, label) %>%
+  summarize(count = n(), percent = n() / language_total) %>%
+  distinct()
+
+# Save data set as csv file for Tableau.
+write_csv(data, path = "./data/african_tweets.csv")
+```
+
+Dataset is pretty even by label - 30 to 36% per label. Highest is neutral.
+
+Dataset is not even by language. Highest is Hausa (20%), lowest is Xitsonga (1%)
+
+Dataset is not even by language scripts. Most tweets are in a Latin script (77%), fewest are in solely Arabic (2%).
+
+Highest concentration of tweets are from Nigeria (29%), fewest are from language in Eswatini, Mozambique, and South Africa.
+
+Highest concentration of tweets are from solely Western Africa (32%), closely followed by Middle and Western Africa (27%), then Eastern Africa (27%).
+
+label counts by language ranges from 219 to 7,524.
+
+## Story
+
+Although the data is balanced by sentiment label, it is imbalanced by language, script, and country so any conclusions draw about the tweet sentiment by these three categories are suspect to bias.
+
+Visualization 1: Observations by sentiment label.
+
+Visualization 2: Observations by language.
+
+Visualization 3: Observations by language script.
+
+Visualization 4: Observations by country and region.
+
+Visualization 5: Observations by sentiment label and country, language, or language script.
